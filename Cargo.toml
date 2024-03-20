@@ -13,12 +13,15 @@ version = "0.30.0"
 edition = "2021"
 
 [features]
-default = ["bevy_ui", "bevy_reflect"]
+default = ["bevy_reflect"]
 bevy_reflect = []
-bevy_ui = ["bevy/bevy_ui", "bevy/bevy_render"]
 
 [dependencies]
-bevy = { version = "0.11", default-features = false, features = ["bevy_asset"] }
+bevy = { version = "0.11", default-features = false, features = [
+    "bevy_asset",
+    "bevy_ui",
+    "bevy_render",
+] }
 non-empty-vec = { version = "0.2.2", default-features = false }
 
 [dev-dependencies]

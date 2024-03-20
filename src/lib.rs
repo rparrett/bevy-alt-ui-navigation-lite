@@ -38,7 +38,6 @@
 #![allow(clippy::unnecessary_lazy_evaluations)]
 
 mod commands;
-#[cfg(feature = "bevy_ui")]
 pub mod components;
 pub mod events;
 mod marker;
@@ -54,7 +53,6 @@ use bevy::prelude::*;
 
 pub use non_empty_vec::NonEmpty;
 
-#[cfg(feature = "bevy_ui")]
 use resolve::UiProjectionQuery;
 
 /// Default imports for `bevy_ui_navigation`.
@@ -65,7 +63,6 @@ pub mod prelude {
         FocusAction, FocusState, Focusable, Focused, MenuNavigationStrategy, NavLock,
     };
     pub use crate::NavRequestSystem;
-    #[cfg(feature = "bevy_ui")]
     pub use crate::{DefaultNavigationPlugins, NavigationPlugin};
 }
 /// Utilities to mark focusables within a menu with a specific component.
@@ -75,7 +72,6 @@ pub mod mark {
 }
 /// Types useful to define your own custom navigation inputs.
 pub mod custom {
-    #[cfg(feature = "bevy_ui")]
     pub use crate::resolve::UiProjectionQuery;
     pub use crate::resolve::{Rect, ScreenBoundaries};
     pub use crate::GenericNavigationPlugin;
@@ -177,7 +173,6 @@ pub struct NavRequestSystem;
 /// [`NavRequest`]: prelude::NavRequest
 #[derive(Default)]
 pub struct GenericNavigationPlugin<STGY>(PhantomData<fn() -> STGY>);
-#[cfg(feature = "bevy_ui")]
 /// A default [`GenericNavigationPlugin`] for `bevy_ui`.
 pub type NavigationPlugin<'w, 's> = GenericNavigationPlugin<UiProjectionQuery<'w, 's>>;
 
@@ -231,9 +226,7 @@ where
 /// This provides default implementations for input handling, if you want
 /// your own custom input handling, you should use [`NavigationPlugin`] and
 /// provide your own input handling systems.
-#[cfg(feature = "bevy_ui")]
 pub struct DefaultNavigationPlugins;
-#[cfg(feature = "bevy_ui")]
 impl PluginGroup for DefaultNavigationPlugins {
     fn build(self) -> bevy::app::PluginGroupBuilder {
         bevy::app::PluginGroupBuilder::start::<Self>()

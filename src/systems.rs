@@ -302,7 +302,6 @@ pub trait ScreenSize {
     fn size(&self) -> Vec2;
 }
 
-#[cfg(feature = "bevy_ui")]
 impl ScreenSize for Node {
     fn size(&self) -> Vec2 {
         self.size()
@@ -322,7 +321,6 @@ impl ScreenSize for Node {
 /// when integrating in the game) in this case, you should write your own
 /// system that sends [`NavRequest`](crate::events::NavRequest) events. You may use
 /// [`ui_focusable_at`] to tell which focusable is currently being hovered.
-#[cfg(feature = "bevy_ui")]
 #[allow(clippy::too_many_arguments)]
 pub fn default_mouse_input(
     input_mapping: Res<InputMapping>,
@@ -427,7 +425,6 @@ pub fn generic_default_mouse_input<T: ScreenSize + Component>(
 /// (assuming there is a unique one).
 ///
 /// See [`ScreenBoundaries`] doc for details.
-#[cfg(feature = "bevy_ui")]
 #[allow(clippy::type_complexity)]
 pub fn update_boundaries(
     mut commands: Commands,
@@ -460,9 +457,7 @@ pub fn update_boundaries(
 }
 
 /// Default input systems for ui navigation.
-#[cfg(feature = "bevy_ui")]
 pub struct DefaultNavigationSystems;
-#[cfg(feature = "bevy_ui")]
 impl Plugin for DefaultNavigationSystems {
     fn build(&self, app: &mut App) {
         use crate::NavRequestSystem;

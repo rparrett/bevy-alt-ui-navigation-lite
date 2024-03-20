@@ -52,7 +52,6 @@ use bevy::{
     },
     math::Vec2,
 };
-#[cfg(feature = "bevy_ui")]
 use bevy::{
     math::Vec3Swizzles,
     prelude::{GlobalTransform, Res},
@@ -133,7 +132,6 @@ pub(crate) struct ChildQueries<'w, 's> {
 /// It uses the [`ScreenBoundaries`] resource to compute screen boundaries
 /// and move the cursor accordingly when it reaches a screen border
 /// in a cycling menu.
-#[cfg(feature = "bevy_ui")]
 #[derive(SystemParam)]
 pub struct UiProjectionQuery<'w, 's> {
     boundaries: Option<Res<'w, ScreenBoundaries>>,
@@ -619,7 +617,6 @@ impl Focusable {
 #[non_exhaustive]
 pub struct Focused;
 
-#[cfg(feature = "bevy_ui")]
 impl<'w, 's> MenuNavigationStrategy for UiProjectionQuery<'w, 's> {
     fn resolve_2d<'a>(
         &self,
