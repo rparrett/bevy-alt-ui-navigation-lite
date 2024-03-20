@@ -33,8 +33,8 @@
 [`NavRequest::ScopeMove`]: events::NavRequest::ScopeMove
 [`NavRequestSystem`]: NavRequestSystem
 */
-#![forbid(missing_docs)]
 #![doc = include_str!("../Readme.md")]
+#![forbid(missing_docs)]
 #![allow(clippy::unnecessary_lazy_evaluations)]
 
 mod commands;
@@ -143,7 +143,7 @@ impl<T: 'static + Sync + Send + Component + Clone> Plugin for NavMarkerPropagati
 ///         .add_plugins(GenericNavigationPlugin::<MoveCursor3d>::new())
 ///         // ...
 ///         // Add the button color update system after the focus update system
-///         .add_systems(button_system.after(NavRequestSystem))
+///         .add_systems(Update, button_system.after(NavRequestSystem))
 ///         // ...
 ///         .run();
 /// }

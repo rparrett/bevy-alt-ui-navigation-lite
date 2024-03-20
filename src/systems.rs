@@ -125,7 +125,7 @@ macro_rules! mapping {
 /// The button mapping may be controlled through the [`InputMapping`] resource.
 /// You may however need to customize the behavior of this system (typically
 /// when integrating in the game) in this case, you should write your own
-/// system that sends [`NavRequest`](crate::events::NavRequest) events
+/// system that sends [`NavRequest`] events
 pub fn default_gamepad_input(
     mut nav_cmds: EventWriter<NavRequest>,
     has_focused: Query<(), With<Focused>>,
@@ -196,7 +196,7 @@ pub fn default_gamepad_input(
 /// The button mapping may be controlled through the [`InputMapping`] resource.
 /// You may however need to customize the behavior of this system (typically
 /// when integrating in the game) in this case, you should write your own
-/// system that sends [`NavRequest`](crate::events::NavRequest) events.
+/// system that sends [`NavRequest`] events.
 pub fn default_keyboard_input(
     has_focused: Query<(), With<Focused>>,
     keyboard: Res<Input<KeyCode>>,
@@ -319,7 +319,7 @@ impl ScreenSize for Node {
 ///
 /// You may however need to customize the behavior of this system (typically
 /// when integrating in the game) in this case, you should write your own
-/// system that sends [`NavRequest`](crate::events::NavRequest) events. You may use
+/// system that sends [`NavRequest`] events. You may use
 /// [`ui_focusable_at`] to tell which focusable is currently being hovered.
 #[allow(clippy::too_many_arguments)]
 pub fn default_mouse_input(
@@ -352,7 +352,7 @@ pub fn default_mouse_input(
 ///
 /// You may however need to customize the behavior of this system (typically
 /// when integrating in the game) in this case, you should write your own
-/// system that sends [`NavRequest`](crate::events::NavRequest) events. You may use
+/// system that sends [`NavRequest`] events. You may use
 /// [`ui_focusable_at`] to tell which focusable is currently being hovered.
 #[allow(clippy::too_many_arguments)]
 pub fn generic_default_mouse_input<T: ScreenSize + Component>(
