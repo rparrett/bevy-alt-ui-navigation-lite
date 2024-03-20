@@ -21,18 +21,6 @@ Check out the [`examples`][examples] directory for bevy examples.
 
 ![Demonstration of "Ultimate navigation" example](https://user-images.githubusercontent.com/26321040/141612751-ba0e62b2-23d6-429a-b5d1-48b09c10d526.gif)
 
-## Cargo Features
-
-This crate exposes the `cuicui_dsl` feature. Disabled by default. Enabling it
-will add the `dsl` module, defining `NavigationDsl` useable with the `dsl!`
-macro.
-
-This crate exposes the `bevy_ui` feature. It is enabled by default. Toggling
-off this feature let you compile this crate without requiring the bevy `render`
-feature, however, it requires implementing your own input handling. Check out
-the source code for the [`systems`][module-systems] module for leads on
-implementing your own input handling.
-
 ## Usage
 
 See [this example][example-simple] for a quick start guide.
@@ -455,7 +443,12 @@ pre-`1.` versions do).
 
 ## License
 
-Copyright © 2022 Nicola Papale
+This project is a derivative of [`bevy-ui-navigation`](https://github.com/nicopap/ui-navigation).
 
-This software is licensed under either MIT or Apache 2.0 at your leisure. See
-licenses directory for details.
+Copyright © 2022 Nicola Papale.
+
+`bevy-ui-navigation` is licensed under either MIT or Apache 2.0. See
+[`licenses-bevy-ui-navigation`](licenses-bevy-ui-navigation) directory for details.
+
+This project is licensed under either MIT or Apache 2.0. See
+[`licenses`](licenses) directory for details.
