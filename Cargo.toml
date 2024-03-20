@@ -19,17 +19,8 @@ bevy_ui = ["bevy/bevy_ui", "bevy/bevy_render"]
 
 [dependencies]
 bevy = { version = "0.11", default-features = false, features = ["bevy_asset"] }
-cuicui_dsl = { version = "0.8.1", optional = true }
 non-empty-vec = { version = "0.2.2", default-features = false }
 
 [dev-dependencies]
 fastrand = "1.7"
-# bevy-inspector-egui = "0.19"
-# bevy_framepace = "0.12.1"
-cuicui_layout_bevy_ui = "0.8.0"
-cuicui_layout = "0.8.0"
 bevy = { version = "0.11", default-features = true }
-
-[[example]]
-name = "ultimate_menu_navigation"
-required-features = ["cuicui_dsl"]
