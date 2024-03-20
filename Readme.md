@@ -21,7 +21,6 @@ Check out the [`examples`][examples] directory for bevy examples.
 
 ![Demonstration of "Ultimate navigation" example](https://user-images.githubusercontent.com/26321040/141612751-ba0e62b2-23d6-429a-b5d1-48b09c10d526.gif)
 
-
 ## Cargo Features
 
 This crate exposes the `cuicui_dsl` feature. Disabled by default. Enabling it
@@ -34,7 +33,6 @@ feature, however, it requires implementing your own input handling. Check out
 the source code for the [`systems`][module-systems] module for leads on
 implementing your own input handling.
 
-
 ## Usage
 
 See [this example][example-simple] for a quick start guide.
@@ -43,7 +41,6 @@ See [this example][example-simple] for a quick start guide.
 doesn't include many examples. This page contains most of the doc examples,
 you should check the [examples directory][examples] for examples showcasing
 all features of this crate.
-
 
 ### Simple case
 
@@ -139,6 +136,7 @@ go, and you get there.
 
 Any [`Entity`] can be converted into a focusable entity by adding the [`Focusable`]
 component to it. To do so, just:
+
 ```rust
 # use bevy::prelude::*;
 # use bevy_ui_navigation::prelude::Focusable;
@@ -146,11 +144,13 @@ fn system(mut cmds: Commands, my_entity: Entity) {
     cmds.entity(my_entity).insert(Focusable::default());
 }
 ```
+
 That's it! Now `my_entity` is part of the navigation tree. The player can select
 it with their controller the same way as any other [`Focusable`] element.
 
 You probably want to render the focused button differently than other buttons,
 this can be done with the [`Changed<Focusable>`][Changed] query parameter as follow:
+
 ```rust
 use bevy::prelude::*;
 use bevy_ui_navigation::prelude::{FocusState, Focusable};
@@ -175,6 +175,7 @@ You will want the interaction feedback to be snappy. This means the
 interaction feedback should run the same frame as the focus change. For this to
 happen every frame, you should add `button_system` to your app using the
 [`NavRequestSystem`] label like so:
+
 ```rust, no_run
 use bevy::prelude::*;
 use bevy_ui_navigation::prelude::{NavRequestSystem, NavRequest, NavigationPlugin};
@@ -200,7 +201,6 @@ fn main() {
 fn button_system() {}
 ```
 
-
 ## More complex use cases
 
 ### Locking
@@ -211,7 +211,6 @@ If you need to supress the navigation algorithm temporarily, you can declare a
 This is useful for example if you want to implement custom widget with their
 own controls, or if you want to disable menu navigation while in game. To
 resume the navigation system, you'll need to send a [`NavRequest::Free`].
-
 
 ### `NavRequest::FocusOn`
 
@@ -243,9 +242,11 @@ this behavior, spawn a prioritized [`Focusable`] with [`Focusable::prioritized`]
 Suppose you have a more complex game with menus sub-menus and sub-sub-menus etc.
 For example, in your everyday 2021 AAA game, to change the antialiasing you
 would go through a few menus:
+
 ```text
 game menu → options menu → graphics menu → custom graphics menu → AA
 ```
+
 In this case, you need to be capable of specifying which button in the previous
 menu leads to the next menu (for example, you would press the "Options" button
 in the game menu to access the options menu).
@@ -253,6 +254,7 @@ in the game menu to access the options menu).
 For that, you need to use [`MenuBuilder`].
 
 The high level usage of [`MenuBuilder`] is as follow:
+
 1. First you need a "root" menu using `MenuBuilder::Root`.
 2. You need to spawn into the ECS your "options" button with a [`Focusable`]
    component. To link the button to your options menu, you need to do one of
@@ -269,6 +271,7 @@ The high level usage of [`MenuBuilder`] is as follow:
      if you have an [`Entity`] id.
 
 In code, This will look like this:
+
 ```rust
 use bevy::prelude::*;
 use bevy_ui_navigation::prelude::{Focusable, MenuSetting, MenuBuilder};
@@ -345,6 +348,7 @@ menu.
 To define a menu, you need both the `MenuBuilder` and `MenuSetting` components.
 
 A [`MenuSetting`] gives you fine-grained control on how navigation is handled within a menu:
+
 * `MenuSetting::new().wrapping()` enables looping
   navigation, where going offscreen in one direction "wraps" to the opposite
   screen edge.
@@ -355,14 +359,12 @@ A [`MenuSetting`] gives you fine-grained control on how navigation is handled wi
 See the [`MenuSetting`] documentation or the ["ultimate" menu navigation
 example][example-ultimate] for details.
 
-
 #### Marking
 
 If you need to know from which menu a [`NavEvent::FocusChanged`] originated, you
 can use `NavMarker` in the [`mark`][module-marking] module.
 
 A usage demo is available in [the `marking.rs` example][example-marking].
-
 
 ### Menu action with keyboard return (enter) key
 
@@ -390,7 +392,6 @@ fn return_trigger_action(mut requests: EventWriter<NavRequest>, input: Res<Input
 }
 ```
 
-
 ## Changelog
 
 * `0.8.2`: Fix offsetting of mouse focus with `UiCamera`s with a transform set
@@ -401,8 +402,8 @@ fn return_trigger_action(mut requests: EventWriter<NavRequest>, input: Res<Input
 * `0.9.1`: Fix #8, Panic on diagonal gamepad input
 * `0.10.0`: Add the `bevy-ui` feature, technically this includes breaking
   changes, but it is very unlikely you need to change your code to get it
-  working 
-  * **Breaking**: if you were manually calling `default_mouse_input`, it now has 
+  working
+  * **Breaking**: if you were manually calling `default_mouse_input`, it now has
     additional parameters
   * **Breaking**: `ui_focusable_at` and `NodePosQuery` now have type parameters
 * `0.11.0`: Add the `Focusable::lock` feature. A focusable now can be declared
@@ -551,11 +552,11 @@ fn return_trigger_action(mut requests: EventWriter<NavRequest>, input: Res<Input
   * Improve performance on `NavEventReader::activated_in_query_foreach_mut`
   * **BREAKING**: Update to bevy 0.10.0
 * `0.24.1`:
-  - Fix the `ultimate_menu_navigation.rs` example
-  - add keyboard navigation to it, `too_many_focusables.rs`, `menu_navigation.rs` and `simple.rs`.
-  - Add focus follow mouse to `simple.rs` and `ultimate_menu_navigation.rs`
-  - Add `bevy_framepace` to all examples.
-  - Remove `#[bundle]` attribute from navigation bundles (it's now useless)
+  * Fix the `ultimate_menu_navigation.rs` example
+  * add keyboard navigation to it, `too_many_focusables.rs`, `menu_navigation.rs` and `simple.rs`.
+  * Add focus follow mouse to `simple.rs` and `ultimate_menu_navigation.rs`
+  * Add `bevy_framepace` to all examples.
+  * Remove `#[bundle]` attribute from navigation bundles (it's now useless)
 * `0.25.0`: **BREAKING**: Update ot bevy 0.11.0
 * `0.26.0`: **BREAKING**: Fix the `bevy_ui` feature. Ooops sorry.
 * `0.27.0`: Non-breaking: Add a `cuicui_dsl` `DslBundle` behind the `cuicui_dsl` feature flag.
@@ -567,9 +568,9 @@ fn return_trigger_action(mut requests: EventWriter<NavRequest>, input: Res<Input
 * **FUTURE**: `0.31.0` The goal is to split this crate so that it fits better
   with the rest of the bevy ecosystem. Future Plans involve
   Split the crate in 3 sub-crate, as described in the now [closed RFC][rfc41]:
-    * A plugin to translate bevy_ui things into events
-    * A plugin for gamepad-based navigation system
-    * A plugin for complex hierarchical menu navigation
+  * A plugin to translate bevy_ui things into events
+  * A plugin for gamepad-based navigation system
+  * A plugin for complex hierarchical menu navigation
 
 [the RFC PR]: https://github.com/bevyengine/bevy/pull/5378
 [diff-18-19]: https://github.com/nicopap/ui-navigation/compare/v0.18.0...v0.19.0
@@ -595,7 +596,6 @@ fn return_trigger_action(mut requests: EventWriter<NavRequest>, input: Res<Input
 [module-systems]: https://docs.rs/bevy-ui-navigation/latest/bevy_ui_navigation/systems/index.html
 [Name]: https://docs.rs/bevy/latest/bevy/core/enum.Name.html
 [`NavEvent::FocusChanged`]: https://docs.rs/bevy-ui-navigation/latest/bevy_ui_navigation/events/enum.NavEvent.html#variant.FocusChanged
-[`NavEvent`]: https://docs.rs/bevy-ui-navigation/latest/bevy_ui_navigation/events/enum.NavEvent.html
 [`NavEvent::InitiallyFocused`]: https://docs.rs/bevy-ui-navigation/latest/bevy_ui_navigation/events/enum.NavEvent.html#variant.InitiallyFocused
 [`MenuSetting`]: https://docs.rs/bevy-ui-navigation/latest/bevy_ui_navigation/menu/enum.MenuSetting.html
 [`NavMenu`]: https://docs.rs/bevy-ui-navigation/latest/bevy_ui_navigation/menu/enum.MenuSetting.html
@@ -606,7 +606,6 @@ fn return_trigger_action(mut requests: EventWriter<NavRequest>, input: Res<Input
 [`NavRequest::Action`]: https://docs.rs/bevy-ui-navigation/latest/bevy_ui_navigation/events/enum.NavRequest.html#variant.Action
 [`NavRequest::FocusOn`]: https://docs.rs/bevy-ui-navigation/latest/bevy_ui_navigation/events/enum.NavRequest.html#variant.FocusOn
 [`NavRequest::Free`]: https://docs.rs/bevy-ui-navigation/latest/bevy_ui_navigation/events/enum.NavRequest.html#variant.Unlock
-[`NavRequest::Unlock`]: https://docs.rs/bevy-ui-navigation/latest/bevy_ui_navigation/events/enum.NavRequest.html#variant.Unlock
 [`NavRequest::ScopeMove`]: https://docs.rs/bevy-ui-navigation/latest/bevy_ui_navigation/events/enum.NavRequest.html#variant.ScopeMove
 [`NavRequestSystem`]: https://docs.rs/bevy-ui-navigation/latest/bevy_ui_navigation/struct.NavRequestSystem.html
 [rfc41]: https://github.com/nicopap/rfcs/blob/ui-navigation/rfcs/41-ui-navigation.md
@@ -644,7 +643,6 @@ Also, the way cargo handles versioning for `0.*` crates is in infraction of
 the semver specification. Meaning that additional features without breakages
 requires bumping the minor version rather than the patch version (as should
 pre-`1.` versions do).
-
 
 # License
 
