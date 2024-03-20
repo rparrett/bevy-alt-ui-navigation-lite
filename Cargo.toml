@@ -25,5 +25,5 @@ bevy = { version = "0.12", default-features = false, features = [
 non-empty-vec = { version = "0.2.2", default-features = false }
 
 [dev-dependencies]
-fastrand = "1.7"
+fastrand = "2.0.1"
 bevy = { version = "0.12", default-features = true }
