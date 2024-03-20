@@ -140,10 +140,10 @@ impl<T: 'static + Sync + Send + Component + Clone> Plugin for NavMarkerPropagati
 /// # fn button_system() {}
 /// fn main() {
 ///     App::new()
-///         .add_plugin(GenericNavigationPlugin::<MoveCursor3d>::new())
+///         .add_plugins(GenericNavigationPlugin::<MoveCursor3d>::new())
 ///         // ...
 ///         // Add the button color update system after the focus update system
-///         .add_system(button_system.after(NavRequestSystem))
+///         .add_systems(button_system.after(NavRequestSystem))
 ///         // ...
 ///         .run();
 /// }
@@ -157,7 +157,7 @@ pub struct NavRequestSystem;
 
 /// The navigation plugin.
 ///
-/// Add it to your app with `.add_plugin(NavigationPlugin::new())` and send
+/// Add it to your app with `.add_plugins(NavigationPlugin::new())` and send
 /// [`NavRequest`]s to move focus within declared [`Focusable`] entities.
 ///
 /// You should prefer `bevy_ui` provided defaults
@@ -238,10 +238,7 @@ impl PluginGroup for DefaultNavigationPlugins {
 #[cfg(test)]
 mod test {
     use crate::prelude::*;
-    use bevy::{
-        ecs::{event::Event, world::EntityMut},
-        prelude::*,
-    };
+    use bevy::{ecs::event::Event, prelude::*};
 
     use super::*;
     // Why things might fail?
@@ -286,7 +283,7 @@ mod test {
     }
 
     impl SpawnFocusable {
-        fn spawn(self, mut entity: EntityMut) {
+        fn spawn(self, mut entity: EntityWorldMut) {
             let SpawnFocusable {
                 name,
                 prioritized,
@@ -313,7 +310,7 @@ mod test {
         children: Vec<SpawnFocusable>,
     }
     impl SpawnMenu {
-        fn spawn(self, entity: &mut EntityMut) {
+        fn spawn(self, entity: &mut EntityWorldMut) {
             let SpawnMenu { name, children } = self;
             let parent_focusable = name.strip_suffix(" Menu");
             let menu_builder = match parent_focusable {

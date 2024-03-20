@@ -588,6 +588,10 @@ A usage demo is available in [the `marking.rs` example][example-marking].
 [pr-hover]: https://github.com/nicopap/bevy/blob/0530d03b514e5e1e3d42a89283b5e6d050e9c265/crates/bevy_ui/src/focus.rs#L190-L223
 [`NavEventReader::types`]: https://docs.rs/bevy-ui-navigation/latest/bevy_ui_navigation/events/struct.NavEventReader.html#method.types
 
+### Changelog
+
+See the changelog at <CHANGELOG.md>
+
 ### Version matrix
 
 | bevy | latest supporting version      |
@@ -621,8 +625,3 @@ Copyright © 2022 Nicola Papale
 
 This software is licensed under either MIT or Apache 2.0 at your leisure. See
 licenses directory for details.
-
-### Font
-
-The font in `font.ttf` is derived from Adobe SourceSans, licensed
-under the SIL OFL. see file at `licenses/SIL Open Font License.txt`.
