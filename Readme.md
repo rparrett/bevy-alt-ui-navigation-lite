@@ -4,14 +4,16 @@
 [![MIT/Apache 2.0](https://img.shields.io/badge/license-MIT%2FApache-blue.svg)](./LICENSE)
 
 A generic UI navigation algorithm for the
-[Bevy](https://github.com/bevyengine/bevy) engine default UI library. Based on [`bevy-ui-navigation`](https://github.com/nicopap) but stripped down to remove dependencies on other Bevy ecosystem crates and support for non-`bevy_ui` UIs.
+[Bevy](https://github.com/bevyengine/bevy) engine default UI library.
+
+Based on [`bevy-ui-navigation`](https://github.com/nicopap) but stripped down to remove support for `cuicui_layout` and `bevy_mod_picking`.
+
+Offered with limited support -- I plan to keep this updated with the latest Bevy release and fix bugs, but I am not interested in adding new features.
 
 ```toml
 [dependencies]
-bevy-ui-navigation = { git = "https://github.com/rparrett/bevy-alt-ui-navigation-lite" }
+bevy-alt-ui-navigation-lite = "0.1"
 ```
-
-The in-depth design specification is [available here][rfc41].
 
 ## Usage
 
@@ -401,7 +403,6 @@ fn return_trigger_action(mut requests: EventWriter<NavRequest>, input: Res<Input
 [`NavRequest::Free`]: https://docs.rs/bevy-ui-navigation/latest/bevy_ui_navigation/events/enum.NavRequest.html#variant.Unlock
 [`NavRequest::ScopeMove`]: https://docs.rs/bevy-ui-navigation/latest/bevy_ui_navigation/events/enum.NavRequest.html#variant.ScopeMove
 [`NavRequestSystem`]: https://docs.rs/bevy-ui-navigation/latest/bevy_ui_navigation/struct.NavRequestSystem.html
-[rfc41]: https://github.com/nicopap/rfcs/blob/ui-navigation/rfcs/41-ui-navigation.md
 
 ### Changelog
 
@@ -409,14 +410,9 @@ See the changelog at <CHANGELOG.md>
 
 ### Version matrix
 
-| bevy | latest supporting version      |
+| `bevy` | `bevy-alt-ui-navigation-lite` |
 |------|--------|
-| 0.11 | 0.30.0 |
-| 0.10 | 0.24.1 |
-| 0.9  | 0.23.1 |
-| 0.8  | 0.21.0 |
-| 0.7  | 0.18.0 |
-| 0.6  | 0.14.0 |
+| 0.13 | 0.1.0  |
 
 ## License
 
