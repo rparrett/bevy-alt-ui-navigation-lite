@@ -10,7 +10,7 @@ use bevy_alt_ui_navigation_lite::{
 
 /// This example demonstrates a more complex menu system where you navigate
 /// through menus and go to submenus using the `Action` and `Cancel`
-/// (`ENTER` and `BACKSPACE` on keyboard) requests.
+/// (`SPACE` and `BACKSPACE` on keyboard) requests.
 ///
 /// This introduces the concept of "active" and "dormant" focusable elements.
 ///
@@ -21,12 +21,12 @@ use bevy_alt_ui_navigation_lite::{
 /// `Action` while the parent menu's corresponding `Focusable` is focused.
 ///
 /// To navigate to the right column, move focus to the button with the right arrow
-/// and press `ENTER`, to navigate to the left, press `BACKSPACE`. Notice how
+/// and press `SPACE`, to navigate to the left, press `BACKSPACE`. Notice how
 /// going back to an already explored menu sets the focused element to the last
 /// focused one.
 ///
 /// This example also demonstrates the `NavRequest::FocusOn` request. When
-/// `ENTER` is pressed when a green circle button is focused, it sends the
+/// `SPACE` is pressed when a green circle button is focused, it sends the
 /// `FocusOn` request with a first row button as target.
 fn main() {
     App::new()
@@ -102,7 +102,9 @@ fn handle_nav_events(
             NavEvent::NoChanges {
                 from,
                 request: Action,
-            } if game.from.contains(from.first()) => requests.send(NavRequest::FocusOn(game.to)),
+            } if game.from.contains(from.first()) => {
+                requests.send(NavRequest::FocusOn(game.to));
+            }
             _ => {}
         }
     }

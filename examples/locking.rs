@@ -35,8 +35,8 @@ fn print_nav_events(mut events: EventReader<NavEvent>) {
     }
 }
 
-fn extra_lock_key(mut requests: EventWriter<NavRequest>, input: Res<Input<KeyCode>>) {
-    if input.just_pressed(KeyCode::L) {
+fn extra_lock_key(mut requests: EventWriter<NavRequest>, input: Res<ButtonInput<KeyCode>>) {
+    if input.just_pressed(KeyCode::KeyL) {
         requests.send(NavRequest::Lock);
     }
 }

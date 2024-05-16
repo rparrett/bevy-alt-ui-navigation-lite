@@ -187,7 +187,7 @@ pub fn mouse_pointer_system(
     camera: Query<(&GlobalTransform, &Camera), With<Camera2d>>,
     camera_moving: Query<(), (Changed<GlobalTransform>, With<Camera2d>)>,
     primary_query: Query<&Window, With<PrimaryWindow>>,
-    mouse: Res<Input<MouseButton>>,
+    mouse: Res<ButtonInput<MouseButton>>,
     focusables: Query<(&GlobalTransform, &Sprite, Entity), With<Focusable>>,
     focused: Query<Entity, With<Focused>>,
     mut nav_cmds: EventWriter<NavRequest>,
@@ -533,7 +533,7 @@ fn spawn_button(
         ))
         .with_children(|commands| {
             commands.spawn(Text2dBundle {
-                text: Text::from_section(text, text_style).with_alignment(TextAlignment::Center),
+                text: Text::from_section(text, text_style).with_justify(JustifyText::Center),
                 transform: item_position(Vec2::ZERO),
                 ..default()
             });
@@ -584,7 +584,7 @@ fn spawn_weapon_upgrade_menu(
             // Weapon name
             commands.spawn(Text2dBundle {
                 text: Text::from_section(weapon.to_string(), text_style())
-                    .with_alignment(TextAlignment::Center),
+                    .with_justify(JustifyText::Center),
                 transform: item_position(
                     Vec2::Y * (MENU_HEIGHT / 2.0 - MENU_PADDING - FONT_SIZE / 2.0),
                 ),
@@ -625,16 +625,16 @@ struct MarkButtons;
 fn mark_buttons(
     mut cmds: Commands,
     menu_markers: Query<Entity, With<MarkButtons>>,
-    focusables: Query<With<Focusable>>,
-    menus: Query<With<MenuSetting>>,
+    focusables: Query<(), With<Focusable>>,
+    menus: Query<(), With<MenuSetting>>,
     children: Query<&Children>,
 ) {
     fn mark_focusable(
         entity_children: &Children,
         marker: ParentMenu,
         commands: &mut Commands,
-        focusables: &Query<With<Focusable>>,
-        menus: &Query<With<MenuSetting>>,
+        focusables: &Query<(), With<Focusable>>,
+        menus: &Query<(), With<MenuSetting>>,
         children: &Query<&Children>,
     ) {
         for entity in entity_children {

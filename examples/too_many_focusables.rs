@@ -54,7 +54,7 @@ impl Default for MyDirection {
 }
 
 fn non_stop_move(
-    input: Res<Input<KeyCode>>,
+    input: Res<ButtonInput<KeyCode>>,
     mut requests: EventWriter<NavRequest>,
     mut enabled: Local<bool>,
     time: Res<Time>,
@@ -63,7 +63,7 @@ fn non_stop_move(
     let delta = time.delta_seconds_f64();
     let current_time = time.elapsed_seconds_f64();
     let at_interval = |t: f64| current_time % t < delta;
-    if input.just_pressed(KeyCode::K) {
+    if input.just_pressed(KeyCode::KeyK) {
         *enabled = !*enabled;
     }
     if *enabled {
