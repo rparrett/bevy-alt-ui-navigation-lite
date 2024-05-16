@@ -222,7 +222,7 @@ impl NavMenu {
 
 /// A "seed" for creation of a [`NavMenu`].
 ///
-/// Internally, `bevy_ui_navigation` uses a special component to mark UI nodes
+/// Internally, `bevy_alt_ui_navigation_lite` uses a special component to mark UI nodes
 /// as "menus", this tells the navigation algorithm to add that component to
 /// this `Entity`.
 #[derive(Bundle, Clone)]

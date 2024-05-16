@@ -1,25 +1,17 @@
-# Bevy UI navigation
+# Bevy Alternative UI Navigation (Lite)
 
 [![Bevy tracking](https://img.shields.io/badge/Bevy%20tracking-released%20version-lightblue)](https://github.com/bevyengine/bevy/blob/main/docs/plugins_guidelines.md#main-branch-tracking)
-[![Latest version](https://img.shields.io/crates/v/bevy_ui_navigation.svg)](https://crates.io/crates/bevy_ui_navigation)
 [![MIT/Apache 2.0](https://img.shields.io/badge/license-MIT%2FApache-blue.svg)](./LICENSE)
-[![Documentation](https://docs.rs/bevy-ui-navigation/badge.svg)](https://docs.rs/bevy-ui-navigation/)
 
 A generic UI navigation algorithm for the
-[Bevy](https://github.com/bevyengine/bevy) engine default UI library.
+[Bevy](https://github.com/bevyengine/bevy) engine default UI library. Based on [`bevy-ui-navigation`](https://github.com/nicopap) but stripped down to remove dependencies on other Bevy ecosystem crates and support for non-`bevy_ui` UIs.
 
 ```toml
 [dependencies]
-bevy-ui-navigation = "0.30.0"
+bevy-ui-navigation = { git = "https://github.com/rparrett/bevy-alt-ui-navigation-lite" }
 ```
 
 The in-depth design specification is [available here][rfc41].
-
-## Examples
-
-Check out the [`examples`][examples] directory for bevy examples.
-
-![Demonstration of "Ultimate navigation" example](https://user-images.githubusercontent.com/26321040/141612751-ba0e62b2-23d6-429a-b5d1-48b09c10d526.gif)
 
 ## Usage
 
@@ -425,21 +417,6 @@ See the changelog at <CHANGELOG.md>
 | 0.8  | 0.21.0 |
 | 0.7  | 0.18.0 |
 | 0.6  | 0.14.0 |
-
-### Notes on API Stability
-
-In the 4th week of January, there has been 5 breaking version changes. `0.13.0`
-marks the end of this wave of API changes. And things should go much slower in
-the future.
-
-The new `NavMenu` construction system helps adding orthogonal features to the
-library without breaking API changes. However, since bevy is still in `0.*`
-territory, it doesn't make sense for this library to leave the `0.*` range.
-
-Also, the way cargo handles versioning for `0.*` crates is in infraction of
-the semver specification. Meaning that additional features without breakages
-requires bumping the minor version rather than the patch version (as should
-pre-`1.` versions do).
 
 ## License
 

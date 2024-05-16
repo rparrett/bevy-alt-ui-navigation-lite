@@ -7,18 +7,18 @@ use bevy::text::Text2dBounds;
 use bevy::utils::FloatOrd;
 use bevy::utils::HashMap;
 use bevy::window::PrimaryWindow;
-use bevy_ui_navigation::prelude::{
+use bevy_alt_ui_navigation_lite::prelude::{
     FocusState, Focusable, Focused, MenuBuilder, MenuSetting, NavEvent, NavEventReaderExt,
     NavRequest, NavRequestSystem, NavigationPlugin,
 };
-use bevy_ui_navigation::systems::{default_gamepad_input, InputMapping};
+use bevy_alt_ui_navigation_lite::systems::{default_gamepad_input, InputMapping};
 
 /// This example demonstrates how to generate on the fly focusables to navigate.
 fn main() {
     App::new()
         // Add your own cursor navigation system
         // by using `NavigationPlugin::<MyOwnNavigationStrategy>::new()`
-        // See the [`bevy_ui_navigation::MenuNavigationStrategy`] trait.
+        // See the [`bevy_alt_ui_navigation_lite::MenuNavigationStrategy`] trait.
         //
         // You can use a custom gamepad directional handling system if you want to.
         // This could be useful if you want such navigation in 3d space

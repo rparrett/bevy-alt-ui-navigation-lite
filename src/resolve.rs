@@ -514,8 +514,8 @@ impl Focusable {
     /// # Example
     ///
     /// ```rust
-    /// # use bevy_ui_navigation::prelude::Focusable;
-    /// # use bevy_ui_navigation::components::FocusableButtonBundle;
+    /// # use bevy_alt_ui_navigation_lite::prelude::Focusable;
+    /// # use bevy_alt_ui_navigation_lite::components::FocusableButtonBundle;
     /// # use bevy::prelude::*;
     /// fn setup(mut commands: Commands) {
     ///     commands.spawn(FocusableButtonBundle {
@@ -539,8 +539,8 @@ impl Focusable {
     /// # Example
     ///
     /// ```rust
-    /// # use bevy_ui_navigation::prelude::Focusable;
-    /// # use bevy_ui_navigation::components::FocusableButtonBundle;
+    /// # use bevy_alt_ui_navigation_lite::prelude::Focusable;
+    /// # use bevy_alt_ui_navigation_lite::components::FocusableButtonBundle;
     /// # use bevy::prelude::*;
     /// fn setup(mut commands: Commands) {
     ///     commands.spawn(FocusableButtonBundle {
@@ -647,7 +647,7 @@ impl<'w, 's> MenuNavigationStrategy for UiProjectionQuery<'w, 's> {
                     "Tried to move in {direction:?} from Focusable {focused:?} while no other \
                  Focusables were there. There were no `Res<ScreenBoundaries>`, so we couldn't \
                  compute the screen edges for cycling. Make sure you either add the \
-                 bevy_ui_navigation::systems::update_boundaries system to your app or implement \
+                 bevy_alt_ui_navigation_lite::systems::update_boundaries system to your app or implement \
                  your own routine to manage a `Res<ScreenBoundaries>`."
                 );
                 None

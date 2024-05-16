@@ -55,7 +55,7 @@ pub use non_empty_vec::NonEmpty;
 
 use resolve::UiProjectionQuery;
 
-/// Default imports for `bevy_ui_navigation`.
+/// Default imports for `bevy_alt_ui_navigation_lite`.
 pub mod prelude {
     pub use crate::events::{NavEvent, NavEventReaderExt, NavRequest};
     pub use crate::menu::{MenuBuilder, MenuSetting};
@@ -119,9 +119,9 @@ impl<T: 'static + Sync + Send + Component + Clone> Plugin for NavMarkerPropagati
 /// # Example
 ///
 /// ```rust, no_run
-/// use bevy_ui_navigation::prelude::*;
-/// use bevy_ui_navigation::events::Direction;
-/// use bevy_ui_navigation::custom::GenericNavigationPlugin;
+/// use bevy_alt_ui_navigation_lite::prelude::*;
+/// use bevy_alt_ui_navigation_lite::events::Direction;
+/// use bevy_alt_ui_navigation_lite::custom::GenericNavigationPlugin;
 /// use bevy::prelude::*;
 /// # use std::marker::PhantomData;
 /// # use bevy::ecs::system::SystemParam;

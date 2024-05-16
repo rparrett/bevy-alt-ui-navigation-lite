@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
-use bevy_ui_navigation::mark::{NavMarker, NavMarkerPropagationPlugin};
-use bevy_ui_navigation::prelude::{
+use bevy_alt_ui_navigation_lite::mark::{NavMarker, NavMarkerPropagationPlugin};
+use bevy_alt_ui_navigation_lite::prelude::{
     DefaultNavigationPlugins, FocusState, Focusable, Focused, MenuBuilder, MenuSetting,
     NavRequestSystem,
 };
