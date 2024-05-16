@@ -1,6 +1,6 @@
 [package]
 name = "bevy-alt-ui-navigation-lite"
-authors = ["Nicola Papale"]
+authors = ["Rob Parrett", "Nicola Papale"]
 description = "A bevy plugin to make implementing ui navigation in your game a piece of cake"
 license = "MIT OR Apache-2.0"
 readme = "Readme.md"
@@ -9,7 +9,7 @@ categories = ["game-development", "accessibility", "gui"]
 repository = "https://github.com/rparrett/bevy-alt-ui-navigation-lite"
 homepage = "https://github.com/rparrett/bevy-alt-ui-navigation-lite"
 exclude = ["assets", ".github"]
-version = "0.30.0"
+version = "0.1.0"
 edition = "2021"
 
 [features]
