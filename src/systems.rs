@@ -4,7 +4,7 @@ use crate::{
     resolve::{FocusState, Focusable, Focused, ScreenBoundaries},
 };
 
-use bevy::utils::FloatOrd;
+use bevy::math::FloatOrd;
 use bevy::window::PrimaryWindow;
 #[cfg(feature = "bevy_reflect")]
 use bevy::{ecs::reflect::ReflectResource, reflect::Reflect};

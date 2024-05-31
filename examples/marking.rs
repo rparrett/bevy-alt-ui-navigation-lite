@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{color::palettes::css::*, prelude::*};
 
 use bevy_alt_ui_navigation_lite::mark::{NavMarker, NavMarkerPropagationPlugin};
 use bevy_alt_ui_navigation_lite::prelude::{
@@ -80,14 +80,13 @@ fn print_menus(
 fn button_system(
     mut interaction_query: Query<(&Focusable, &mut BackgroundColor), Changed<Focusable>>,
 ) {
-    for (focus, mut material) in interaction_query.iter_mut() {
-        let color = match focus.state() {
-            FocusState::Focused => Color::ORANGE,
-            FocusState::Active => Color::GOLD,
-            FocusState::Prioritized => Color::GRAY,
-            FocusState::Inert | FocusState::Blocked => Color::BLACK,
+    for (focus, mut color) in interaction_query.iter_mut() {
+        *color = match focus.state() {
+            FocusState::Focused => ORANGE.into(),
+            FocusState::Active => GOLD.into(),
+            FocusState::Prioritized => GRAY.into(),
+            FocusState::Inert | FocusState::Blocked => BLACK.into(),
         };
-        *material = color.into();
     }
 }
 
@@ -101,7 +100,7 @@ fn setup(mut commands: Commands) {
     macro_rules! bndl {
         ($color:expr, {$($style:tt)*} ) => (
             NodeBundle {
-                background_color: ($color as Color).into(),
+                background_color: Color::from($color).into(),
                 style: Style {
                     $($style)*
                     align_items: AlignItems::Center,
@@ -116,24 +115,24 @@ fn setup(mut commands: Commands) {
     let reachable_from = MenuBuilder::EntityParent;
     let good_margin = UiRect::all(Val::Px(20.0));
     // white background
-    let root = bndl!(Color::WHITE, {
+    let root = bndl!(WHITE, {
         width: Pct(100.),
         height: Pct(100.),
         flex_direction: Row,
     });
     // root menu to access each `cell`
-    let keyboard = bndl!(Color::DARK_GRAY, {
+    let keyboard = bndl!(DARK_GRAY, {
         width: Px(50.0 * 3.2),
         height: Px(50.0 * 3.2),
         flex_direction: Column,
         flex_wrap: FlexWrap::Wrap,
     });
     // black container
-    let billboard = bndl!(Color::BLACK, { flex_direction: Row, margin: good_margin, });
+    let billboard = bndl!(BLACK, { flex_direction: Row, margin: good_margin, });
     // colored columns
     let column = |color| bndl!(color, { flex_direction: Column, margin: good_margin, });
     // each row of a column
-    let cell = bndl!(Color::rgba(1.0, 1.0, 1.0, 0.2), {
+    let cell = bndl!(Color::srgba(1.0, 1.0, 1.0, 0.2), {
         flex_direction: Row,
         margin: good_margin,
         padding: good_margin,
@@ -162,7 +161,7 @@ fn setup(mut commands: Commands) {
             })
         }};
     }
-    let (red, green, blue) = (Color::RED, Color::GREEN, Color::BLUE);
+
     // spawn the whole UI tree
     commands.spawn(root).with_children(|cmds| {
         cmds.spawn((
@@ -181,20 +180,20 @@ fn setup(mut commands: Commands) {
             //
             // `wrap` = `MenuSetting::Wrapping2d`, see type alias on top of this
             // function.
-            cmds.spawn(column(red)).with_children(|cmds| {
+            cmds.spawn(column(RED)).with_children(|cmds| {
                 let menu = |row: LeftColMenu| (wrap, reachable_from(bts[row.i()]), NavMarker(row));
                 spawn_cell!(cmds).insert(menu(LeftColMenu::Top));
                 spawn_cell!(cmds).insert(menu(LeftColMenu::Middle));
                 spawn_cell!(cmds).insert(menu(LeftColMenu::Bottom));
             });
-            cmds.spawn(column(green)).with_children(|cmds| {
+            cmds.spawn(column(GREEN)).with_children(|cmds| {
                 let menu =
                     |row: CenterColMenu| (wrap, reachable_from(bts[row.i()]), NavMarker(row));
                 spawn_cell!(cmds).insert(menu(CenterColMenu::Top));
                 spawn_cell!(cmds).insert(menu(CenterColMenu::Middle));
                 spawn_cell!(cmds).insert(menu(CenterColMenu::Bottom));
             });
-            cmds.spawn(column(blue)).with_children(|cmds| {
+            cmds.spawn(column(BLUE)).with_children(|cmds| {
                 let menu = |row: RightColMenu| (wrap, reachable_from(bts[row.i()]), NavMarker(row));
                 spawn_cell!(cmds).insert(menu(RightColMenu::Top));
                 spawn_cell!(cmds).insert(menu(RightColMenu::Middle));

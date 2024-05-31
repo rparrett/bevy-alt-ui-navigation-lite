@@ -1,4 +1,4 @@
-use bevy::ecs::{entity::Entity, prelude::World, system::Command};
+use bevy::ecs::{entity::Entity, prelude::World, world::Command};
 
 use crate::resolve::{FocusState, Focused};
 
