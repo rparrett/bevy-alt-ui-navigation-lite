@@ -430,9 +430,9 @@ mod test {
             None
         }
     }
-    fn receive_events<E: Event + Clone>(world: &World) -> Vec<E> {
-        let events = world.resource::<Events<E>>();
-        events.iter_current_update_events().cloned().collect()
+    fn receive_events<E: Event + Clone>(world: &mut World) -> Vec<E> {
+        let mut events = world.resource_mut::<Events<E>>();
+        events.drain().collect()
     }
 
     /// Wrapper around `App` to make it easier to test the navigation systems.
@@ -472,6 +472,7 @@ mod test {
             hierarchy.spawn(&mut app.world_mut());
             // Run once to convert the `MenuSetting` and `MenuBuilder` into `TreeMenu`.
             app.update();
+            let _: Vec<NavEvent> = receive_events(&mut app.world_mut());
 
             Self { app }
         }
