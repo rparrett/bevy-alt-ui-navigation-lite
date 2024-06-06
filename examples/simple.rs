@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{color::palettes::css::*, prelude::*};
 
 use bevy_alt_ui_navigation_lite::{
     prelude::{DefaultNavigationPlugins, FocusState, Focusable, NavEvent, NavRequestSystem},
@@ -26,17 +26,16 @@ fn main() {
         .run();
 }
 
-fn button_system(
-    mut interaction_query: Query<(&Focusable, &mut BackgroundColor), Changed<Focusable>>,
-) {
-    for (focusable, mut material) in interaction_query.iter_mut() {
+fn button_system(mut interaction_query: Query<(&Focusable, &mut UiImage), Changed<Focusable>>) {
+    for (focusable, mut image) in interaction_query.iter_mut() {
         if let FocusState::Focused = focusable.state() {
-            *material = Color::ORANGE_RED.into();
+            image.color = ORANGE_RED.into();
         } else {
-            *material = Color::DARK_GRAY.into();
+            image.color = DARK_GRAY.into();
         }
     }
 }
+
 fn print_nav_events(mut events: EventReader<NavEvent>) {
     for event in events.read() {
         println!("{:?}", event);
@@ -86,7 +85,7 @@ fn spawn_button(position: Vec2, commands: &mut ChildBuilder) {
                 position_type: PositionType::Absolute,
                 ..Default::default()
             },
-            background_color: Color::DARK_GRAY.into(),
+            image: UiImage::default().with_color(DARK_GRAY.into()),
             ..Default::default()
         },
         // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv

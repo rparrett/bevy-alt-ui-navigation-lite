@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{color::palettes::css::*, prelude::*};
 
 use bevy_alt_ui_navigation_lite::{
     prelude::{
@@ -66,7 +66,7 @@ impl FromWorld for Materials {
     fn from_world(world: &mut World) -> Self {
         let assets = world.get_resource::<AssetServer>().unwrap();
         Materials {
-            background: Color::BLACK,
+            background: BLACK.into(),
             rarrow: assets.load("rarrow.png").into(),
             circle: assets.load("green_circle.png").into(),
         }
@@ -78,11 +78,11 @@ fn button_system(
 ) {
     for (focus, mut material) in interaction_query.iter_mut() {
         let color = match focus.state() {
-            FocusState::Focused => Color::ORANGE_RED,
-            FocusState::Active => Color::GOLD,
-            FocusState::Prioritized => Color::GRAY,
-            FocusState::Inert => Color::DARK_GRAY,
-            FocusState::Blocked => Color::ANTIQUE_WHITE,
+            FocusState::Focused => ORANGE_RED,
+            FocusState::Active => GOLD,
+            FocusState::Prioritized => GRAY,
+            FocusState::Inert => DARK_GRAY,
+            FocusState::Blocked => ANTIQUE_WHITE,
         };
         *material = color.into();
     }

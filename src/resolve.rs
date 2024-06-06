@@ -53,9 +53,9 @@ use bevy::{
     math::Vec2,
 };
 use bevy::{
+    math::FloatOrd,
     math::Vec3Swizzles,
     prelude::{GlobalTransform, Res},
-    utils::FloatOrd,
 };
 
 use non_empty_vec::NonEmpty;

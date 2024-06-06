@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{color::palettes::css::*, prelude::*};
 
 use bevy_alt_ui_navigation_lite::prelude::{
     DefaultNavigationPlugins, FocusState, Focusable, NavEvent, NavRequest, NavRequestSystem,
@@ -43,16 +43,13 @@ fn extra_lock_key(mut requests: EventWriter<NavRequest>, input: Res<ButtonInput<
 
 #[allow(clippy::type_complexity)]
 fn button_system(
-    mut interaction_query: Query<
-        (&Focusable, &mut BackgroundColor),
-        (Changed<Focusable>, With<Button>),
-    >,
+    mut interaction_query: Query<(&Focusable, &mut UiImage), (Changed<Focusable>, With<Button>)>,
 ) {
-    for (focus, mut material) in interaction_query.iter_mut() {
+    for (focus, mut image) in interaction_query.iter_mut() {
         if let FocusState::Focused = focus.state() {
-            *material = Color::ORANGE_RED.into();
+            image.color = ORANGE_RED.into();
         } else {
-            *material = Color::DARK_GRAY.into();
+            image.color = DARK_GRAY.into();
         }
     }
 }
@@ -117,7 +114,7 @@ fn button_bundle(left: Val, bottom: Val) -> ButtonBundle {
             position_type: PositionType::Absolute,
             ..Default::default()
         },
-        background_color: Color::DARK_GRAY.into(),
+        image: UiImage::default().with_color(DARK_GRAY.into()),
         ..Default::default()
     }
 }
