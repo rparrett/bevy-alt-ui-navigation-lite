@@ -17,12 +17,13 @@ bevy-alt-ui-navigation-lite = "0.1"
 
 ## Changelog
 
-See the changelog at <CHANGELOG.md>
+See the changelog at [./CHANGELOG.md]
 
 ## Version matrix
 
 | `bevy` | `bevy-alt-ui-navigation-lite` |
 |------|--------|
+| 0.14 | 0.2.0  |
 | 0.13 | 0.1.0  |
 
 ## License
