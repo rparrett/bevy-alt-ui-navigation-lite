@@ -12,19 +12,19 @@ Offered with limited support -- I plan to keep this updated with the latest Bevy
 
 ```toml
 [dependencies]
-bevy-alt-ui-navigation-lite = "0.1"
+bevy-alt-ui-navigation-lite = "0.2"
 ```
 
 ## Changelog
 
-See the changelog at [./CHANGELOG.md]
+See the changelog at [`CHANGELOG.md`](./CHANGELOG.md)
 
 ## Version matrix
 
 | `bevy` | `bevy-alt-ui-navigation-lite` |
-|------|--------|
-| 0.14 | 0.2.0  |
-| 0.13 | 0.1.0  |
+|------|------|
+| 0.14 | 0.2  |
+| 0.13 | 0.1  |
 
 ## License
 
@@ -36,4 +36,4 @@ Copyright © 2022 Nicola Papale.
 [`licenses-bevy-ui-navigation`](licenses-bevy-ui-navigation) directory for details.
 
 This project is licensed under either MIT or Apache 2.0. See
-[`licenses`](licenses) directory for details.
+[`licenses`](./licenses) directory for details.
