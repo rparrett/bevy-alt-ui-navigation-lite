@@ -1,10 +1,11 @@
 use std::fmt;
 
+use bevy::color::palettes::css::*;
 use bevy::ecs::system::EntityCommands;
+use bevy::math::FloatOrd;
 use bevy::math::Vec3Swizzles;
 use bevy::prelude::*;
 use bevy::text::Text2dBounds;
-use bevy::utils::FloatOrd;
 use bevy::utils::HashMap;
 use bevy::window::PrimaryWindow;
 use bevy_alt_ui_navigation_lite::prelude::{
@@ -388,11 +389,11 @@ fn button_system(
 ) {
     for (focus, base_color, mut sprite) in interaction_query.iter_mut() {
         let color = match focus.state() {
-            FocusState::Focused => Color::PINK,
-            FocusState::Active => Color::GOLD,
-            FocusState::Prioritized => Color::ORANGE_RED,
+            FocusState::Focused => PINK.into(),
+            FocusState::Active => GOLD.into(),
+            FocusState::Prioritized => ORANGE_RED.into(),
             FocusState::Inert => base_color.0,
-            FocusState::Blocked => Color::DARK_GRAY,
+            FocusState::Blocked => DARK_GRAY.into(),
         };
         sprite.color = color;
     }
@@ -565,7 +566,7 @@ fn spawn_weapon_upgrade_menu(
             SpriteBundle {
                 sprite: Sprite {
                     // TODO: random color
-                    color: Color::rgb(0.25, 0.25, 0.75),
+                    color: Color::srgb(0.25, 0.25, 0.75),
                     custom_size: Some(Vec2::new(MENU_WIDTH, MENU_HEIGHT)),
                     ..default()
                 },
@@ -607,7 +608,7 @@ fn spawn_weapon_upgrade_menu(
                 let button_pos = Vec2::new(button_x, -button_y);
                 let text = upgrade.to_string();
                 let mut entity = commands.spawn((Focusable::default(), upgrade, direction));
-                spawn_button(&mut entity, Color::CRIMSON, button_pos, text_style(), text);
+                spawn_button(&mut entity, CRIMSON.into(), button_pos, text_style(), text);
             }
         })
         .id()

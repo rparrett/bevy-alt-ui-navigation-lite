@@ -4,7 +4,7 @@ use crate::{
     resolve::{FocusState, Focusable, Focused, ScreenBoundaries},
 };
 
-use bevy::utils::FloatOrd;
+use bevy::math::FloatOrd;
 use bevy::window::PrimaryWindow;
 #[cfg(feature = "bevy_reflect")]
 use bevy::{ecs::reflect::ReflectResource, reflect::Reflect};
@@ -429,36 +429,42 @@ pub fn generic_default_mouse_input<T: ScreenSize + Component>(
 pub fn update_boundaries(
     mut commands: Commands,
     mut boundaries: Option<ResMut<ScreenBoundaries>>,
-    targets: Query<&TargetCamera>,
-    cameras: Query<&Camera>,
+    cameras: Query<Ref<Camera>>,
+    default_ui_camera: DefaultUiCamera,
+    default_ui_camera_changed: Query<(), Added<IsDefaultUiCamera>>,
 ) {
-    // TODO: This is very broken. It runs every frame instead of only on changes
-    // and assumes only one UI camera might exist.
+    // TODO this assumes there is only a single UI camera.
 
-    let mut update_boundaries = || {
-        let first_ui_cam = targets
-            .iter()
-            .next()
-            .map_or_else(|| cameras.iter().next(), |cam| cameras.get(cam.0).ok())?;
-
-        let physical_size = first_ui_cam.physical_viewport_size()?;
-        let new_boundaries = ScreenBoundaries {
-            position: Vec2::ZERO,
-            screen_edge: crate::resolve::Rect {
-                max: physical_size.as_vec2(),
-                min: Vec2::ZERO,
-            },
-            scale: 1.0,
-        };
-
-        if let Some(boundaries) = boundaries.as_mut() {
-            **boundaries = new_boundaries;
-        } else {
-            commands.insert_resource(new_boundaries);
-        }
-        Some(())
+    let Some(cam_entity) = default_ui_camera.get() else {
+        return;
     };
-    update_boundaries();
+
+    let Ok(cam) = cameras.get(cam_entity) else {
+        return;
+    };
+
+    if default_ui_camera_changed.is_empty() && !cam.is_changed() {
+        return;
+    };
+
+    let Some(physical_size) = cam.physical_viewport_size() else {
+        return;
+    };
+
+    let new_boundaries = ScreenBoundaries {
+        position: Vec2::ZERO,
+        screen_edge: crate::resolve::Rect {
+            max: physical_size.as_vec2(),
+            min: Vec2::ZERO,
+        },
+        scale: 1.0,
+    };
+
+    if let Some(boundaries) = boundaries.as_mut() {
+        **boundaries = new_boundaries;
+    } else {
+        commands.insert_resource(new_boundaries);
+    }
 }
 
 /// Default input systems for ui navigation.

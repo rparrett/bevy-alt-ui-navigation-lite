@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{color::palettes::css::*, prelude::*};
 
 use bevy_alt_ui_navigation_lite::events::{Direction, NavRequest};
 use bevy_alt_ui_navigation_lite::prelude::{
@@ -29,19 +29,16 @@ fn main() {
 }
 
 #[derive(Component)]
-struct IdleColor(BackgroundColor);
+struct IdleColor(Color);
 
 fn button_system(
-    mut interaction_query: Query<
-        (&Focusable, &mut BackgroundColor, &IdleColor),
-        Changed<Focusable>,
-    >,
+    mut interaction_query: Query<(&Focusable, &mut UiImage, &IdleColor), Changed<Focusable>>,
 ) {
-    for (focusable, mut material, IdleColor(idle_color)) in interaction_query.iter_mut() {
+    for (focusable, mut image, IdleColor(idle_color)) in interaction_query.iter_mut() {
         if let FocusState::Focused = focusable.state() {
-            *material = Color::ORANGE_RED.into();
+            image.color = ORANGE_RED.into();
         } else {
-            *material = *idle_color;
+            image.color = *idle_color;
         }
     }
 }
@@ -107,7 +104,7 @@ fn setup(mut commands: Commands, mut input_mapping: ResMut<InputMapping>) {
             }
         });
 }
-fn spawn_button(commands: &mut ChildBuilder, color: BackgroundColor, max: u32, i: u32, j: u32) {
+fn spawn_button(commands: &mut ChildBuilder, color: Color, max: u32, i: u32, j: u32) {
     use Val::Percent as Pct;
     let width = 90.0 / max as f32;
     commands.spawn((
@@ -120,7 +117,7 @@ fn spawn_button(commands: &mut ChildBuilder, color: BackgroundColor, max: u32, i
                 position_type: PositionType::Absolute,
                 ..Default::default()
             },
-            background_color: color,
+            image: UiImage::default().with_color(color),
             ..Default::default()
         },
         Focusable::default(),
