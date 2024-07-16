@@ -1,7 +1,8 @@
 # Bevy Alternative UI Navigation (Lite)
 
-[![Bevy tracking](https://img.shields.io/badge/Bevy%20tracking-released%20version-lightblue)](https://github.com/bevyengine/bevy/blob/main/docs/plugins_guidelines.md#main-branch-tracking)
-[![MIT/Apache 2.0](https://img.shields.io/badge/license-MIT%2FApache-blue.svg)](./LICENSE)
+[![crates.io](https://img.shields.io/crates/v/bevy-alt-ui-navigation-lite.svg)](https://crates.io/crates/bevy-alt-ui-navigation-lite)
+[![docs](https://docs.rs/bevy-alt-ui-navigation-lite/badge.svg)](https://docs.rs/bevy-alt-ui-navigation-lite)
+[![Following released Bevy versions](https://img.shields.io/badge/Bevy%20tracking-released%20version-lightblue)](https://bevyengine.org/learn/book/plugin-development/#main-branch-tracking)
 
 A generic UI navigation algorithm for the
 [Bevy](https://github.com/bevyengine/bevy) engine default UI library.
