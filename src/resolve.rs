@@ -273,7 +273,7 @@ impl<'w, 's> MutQueries<'w, 's> {
     fn set_entity_focus(&mut self, entity: Entity, state: FocusState) {
         if let Ok(mut focusable) = self.focusables.get_mut(entity) {
             focusable.state = state;
-            self.commands.add(set_focus_state(entity, state));
+            self.commands.queue(set_focus_state(entity, state));
         }
     }
 

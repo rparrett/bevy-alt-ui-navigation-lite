@@ -402,7 +402,7 @@ fn button_system(
 /// Handles the [`Animate`] component.
 fn animate_system(mut animated: Query<(&Animate, &mut Transform)>, time: Res<Time>) {
     let delta = time.delta_seconds();
-    let current_time = time.elapsed_seconds_f64();
+    let current_time = time.elapsed_secs_f64();
     for (animate, mut transform) in &mut animated {
         let current_z = transform.translation.z;
         let current = transform.translation.xy();
@@ -500,7 +500,7 @@ fn upgrade_weapon(
                 Ok(cam) => cam,
                 Err(_) => continue,
             };
-            let half_second = time.elapsed_seconds_f64() + 0.5;
+            let half_second = time.elapsed_secs_f64() + 0.5;
             *animate = Animate::Shake {
                 until: half_second,
                 direction,

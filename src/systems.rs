@@ -21,27 +21,27 @@ pub struct InputMapping {
     /// Deadzone on the gamepad left stick for ui navigation
     pub joystick_ui_deadzone: f32,
     /// X axis of gamepad stick
-    pub move_x: GamepadAxisType,
+    pub move_x: GamepadAxis,
     /// Y axis of gamepad stick
-    pub move_y: GamepadAxisType,
+    pub move_y: GamepadAxis,
     /// Gamepad button for [`Direction::West`] [`NavRequest::Move`]
-    pub left_button: GamepadButtonType,
+    pub left_button: GamepadButton,
     /// Gamepad button for [`Direction::East`] [`NavRequest::Move`]
-    pub right_button: GamepadButtonType,
+    pub right_button: GamepadButton,
     /// Gamepad button for [`Direction::North`] [`NavRequest::Move`]
-    pub up_button: GamepadButtonType,
+    pub up_button: GamepadButton,
     /// Gamepad button for [`Direction::South`] [`NavRequest::Move`]
-    pub down_button: GamepadButtonType,
+    pub down_button: GamepadButton,
     /// Gamepad button for [`NavRequest::Action`]
-    pub action_button: GamepadButtonType,
+    pub action_button: GamepadButton,
     /// Gamepad button for [`NavRequest::Cancel`]
-    pub cancel_button: GamepadButtonType,
+    pub cancel_button: GamepadButton,
     /// Gamepad button for [`ScopeDirection::Previous`] [`NavRequest::ScopeMove`]
-    pub previous_button: GamepadButtonType,
+    pub previous_button: GamepadButton,
     /// Gamepad button for [`ScopeDirection::Next`] [`NavRequest::ScopeMove`]
-    pub next_button: GamepadButtonType,
+    pub next_button: GamepadButton,
     /// Gamepad button for [`NavRequest::Unlock`]
-    pub free_button: GamepadButtonType,
+    pub free_button: GamepadButton,
     /// Keyboard key for [`Direction::West`] [`NavRequest::Move`]
     pub key_left: KeyCode,
     /// Keyboard key for [`Direction::East`] [`NavRequest::Move`]
@@ -81,17 +81,17 @@ impl Default for InputMapping {
             keyboard_navigation: false,
             gamepads: vec![Gamepad { id: 0 }],
             joystick_ui_deadzone: 0.36,
-            move_x: GamepadAxisType::LeftStickX,
-            move_y: GamepadAxisType::LeftStickY,
-            left_button: GamepadButtonType::DPadLeft,
-            right_button: GamepadButtonType::DPadRight,
-            up_button: GamepadButtonType::DPadUp,
-            down_button: GamepadButtonType::DPadDown,
-            action_button: GamepadButtonType::South,
-            cancel_button: GamepadButtonType::East,
-            previous_button: GamepadButtonType::LeftTrigger,
-            next_button: GamepadButtonType::RightTrigger,
-            free_button: GamepadButtonType::Start,
+            move_x: GamepadAxis::LeftStickX,
+            move_y: GamepadAxis::LeftStickY,
+            left_button: GamepadButton::DPadLeft,
+            right_button: GamepadButton::DPadRight,
+            up_button: GamepadButton::DPadUp,
+            down_button: GamepadButton::DPadDown,
+            action_button: GamepadButton::South,
+            cancel_button: GamepadButton::East,
+            previous_button: GamepadButton::LeftTrigger,
+            next_button: GamepadButton::RightTrigger,
+            free_button: GamepadButton::Start,
             key_left: KeyCode::KeyA,
             key_right: KeyCode::KeyD,
             key_up: KeyCode::KeyW,

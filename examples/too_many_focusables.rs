@@ -57,8 +57,8 @@ fn non_stop_move(
     time: Res<Time>,
     mut last_direction: Local<MyDirection>,
 ) {
-    let delta = time.delta_seconds_f64();
-    let current_time = time.elapsed_seconds_f64();
+    let delta = time.delta_secs_f64();
+    let current_time = time.elapsed_secs_f64();
     let at_interval = |t: f64| current_time % t < delta;
     if input.just_pressed(KeyCode::KeyK) {
         *enabled = !*enabled;
