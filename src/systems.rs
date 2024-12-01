@@ -17,7 +17,7 @@ pub struct InputMapping {
     /// Whether to use keybaord keys for navigation (instead of just actions).
     pub keyboard_navigation: bool,
     /// The gamepads to use for the UI. If empty, default to gamepad 0
-    pub gamepads: Vec<Gamepad>,
+    pub gamepads: Vec<Entity>,
     /// Deadzone on the gamepad left stick for ui navigation
     pub joystick_ui_deadzone: f32,
     /// X axis of gamepad stick
@@ -79,7 +79,7 @@ impl Default for InputMapping {
     fn default() -> Self {
         InputMapping {
             keyboard_navigation: false,
-            gamepads: vec![Gamepad { id: 0 }],
+            gamepads: vec![],
             joystick_ui_deadzone: 0.36,
             move_x: GamepadAxis::LeftStickX,
             move_y: GamepadAxis::LeftStickY,
@@ -130,8 +130,7 @@ pub fn default_gamepad_input(
     mut nav_cmds: EventWriter<NavRequest>,
     has_focused: Query<(), With<Focused>>,
     input_mapping: Res<InputMapping>,
-    buttons: Res<ButtonInput<GamepadButton>>,
-    axis: Res<Axis<GamepadAxis>>,
+    gamepads: Query<(Entity, &Gamepad)>,
     mut ui_input_status: Local<bool>,
 ) {
     use Direction::*;
@@ -142,11 +141,15 @@ pub fn default_gamepad_input(
         return;
     }
 
-    for &gamepad in &input_mapping.gamepads {
+    for (entity, gamepad) in &gamepads {
+        if !input_mapping.gamepads.is_empty() && !input_mapping.gamepads.contains(&entity) {
+            continue;
+        }
+
         macro_rules! axis_delta {
             ($dir:ident, $axis:ident) => {{
-                let axis_type = input_mapping.$axis;
-                axis.get(GamepadAxis { gamepad, axis_type })
+                gamepad
+                    .get(input_mapping.$axis)
                     .map_or(Vec2::ZERO, |v| Vec2::$dir * v)
             }};
         }
@@ -177,11 +180,7 @@ pub fn default_gamepad_input(
             input_mapping.previous_button => ScopeMove(ScopeDirection::Previous)
         };
         for (button_type, request) in command_mapping {
-            let button = GamepadButton {
-                gamepad,
-                button_type,
-            };
-            if buttons.just_pressed(button) {
+            if gamepad.just_pressed(button_type) {
                 nav_cmds.send(request);
             }
         }
