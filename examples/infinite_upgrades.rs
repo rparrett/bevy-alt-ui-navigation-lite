@@ -5,7 +5,6 @@ use bevy::ecs::system::EntityCommands;
 use bevy::math::FloatOrd;
 use bevy::math::Vec3Swizzles;
 use bevy::prelude::*;
-use bevy::text::TextBounds;
 use bevy::utils::HashMap;
 use bevy::window::PrimaryWindow;
 use bevy_alt_ui_navigation_lite::{
@@ -156,11 +155,6 @@ enum Animate {
 
 trait ScreenSize {
     fn size(&self) -> Vec2;
-}
-impl ScreenSize for TextBounds {
-    fn size(&self) -> Vec2 {
-        TextBounds::size(self)
-    }
 }
 impl ScreenSize for Sprite {
     fn size(&self) -> Vec2 {
