@@ -1,9 +1,8 @@
 use bevy::{color::palettes::css::*, prelude::*};
 
-use bevy_alt_ui_navigation_lite::mark::{NavMarker, NavMarkerPropagationPlugin};
-use bevy_alt_ui_navigation_lite::prelude::{
-    DefaultNavigationPlugins, FocusState, Focusable, Focused, MenuBuilder, MenuSetting,
-    NavRequestSystem,
+use bevy_alt_ui_navigation_lite::{
+    mark::{NavMarker, NavMarkerPropagationPlugin},
+    prelude::*,
 };
 
 macro_rules! column_type {
@@ -94,22 +93,19 @@ fn setup(mut commands: Commands) {
     use FlexDirection::{Column, Row};
     use Val::{Percent as Pct, Px};
     // ui camera
-    commands.spawn(Camera2dBundle::default());
+    commands.spawn(Camera2d);
 
     // First argument to `bndl!` is the color of the node, second is the Style
     macro_rules! bndl {
-        ($color:expr, {$($style:tt)*} ) => (
-            NodeBundle {
-                background_color: Color::from($color).into(),
-                style: Style {
-                    $($style)*
-                    align_items: AlignItems::Center,
-                    justify_content: JustifyContent::SpaceEvenly,
-                    ..Default::default()
-                },
+        ($color:expr, {$($style:tt)*} ) => ((
+            Node {
+                $($style)*
+                align_items: AlignItems::Center,
+                justify_content: JustifyContent::SpaceEvenly,
                 ..Default::default()
-            }
-        )
+            },
+            BackgroundColor(Color::from($color).into())
+        ))
     }
     let wrap = MenuSetting::new().wrapping();
     let reachable_from = MenuBuilder::EntityParent;
@@ -169,7 +165,7 @@ fn setup(mut commands: Commands) {
             MenuSetting::new().wrapping().scope(),
             MenuBuilder::Root, // Add root menu
         ))
-        .push_children(&bts);
+        .add_children(&bts);
 
         cmds.spawn(billboard).with_children(|cmds| {
             // Note: each colored column has a different type, but

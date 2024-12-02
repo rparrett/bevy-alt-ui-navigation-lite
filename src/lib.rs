@@ -38,7 +38,6 @@
 #![allow(clippy::unnecessary_lazy_evaluations)]
 
 mod commands;
-pub mod components;
 pub mod events;
 mod marker;
 pub mod menu;
@@ -425,7 +424,7 @@ mod test {
     }
     // Just to make the next `impl` block shorter, unused otherwise.
     use events::Direction as D;
-    impl<'w, 's> MenuNavigationStrategy for MockNavigationStrategy<'w, 's> {
+    impl MenuNavigationStrategy for MockNavigationStrategy<'_, '_> {
         fn resolve_2d<'a>(&self, _: Entity, _: D, _: bool, _: &'a [Entity]) -> Option<&'a Entity> {
             None
         }
@@ -445,31 +444,31 @@ mod test {
                 .app
                 .world_mut()
                 .query_filtered::<&Name, With<Focused>>();
-            &**query.iter(&self.app.world()).next().unwrap()
+            query.iter(self.app.world()).next().unwrap()
         }
         fn kill_named(&mut self, to_kill: &str) -> Vec<NavEvent> {
             let mut query = self.app.world_mut().query::<(Entity, &Name)>();
             let requested = query
-                .iter(&self.app.world())
+                .iter(self.app.world())
                 .find_map(|(e, name)| (&**name == to_kill).then(|| e));
             if let Some(to_kill) = requested {
                 self.app.world_mut().despawn(to_kill);
             }
             self.app.update();
-            receive_events(&mut self.app.world_mut())
+            receive_events(self.app.world_mut())
         }
         fn name_list(&mut self, entity_list: &[Entity]) -> Vec<&str> {
             let mut query = self.app.world_mut().query::<&Name>();
             entity_list
                 .iter()
-                .filter_map(|e| query.get(&self.app.world(), *e).ok())
+                .filter_map(|e| query.get(self.app.world(), *e).ok())
                 .map(|name| &**name)
                 .collect()
         }
         fn new(hierarchy: SpawnHierarchy) -> Self {
             let mut app = App::new();
             app.add_plugins(GenericNavigationPlugin::<MockNavigationStrategy>::new());
-            hierarchy.spawn(&mut app.world_mut());
+            hierarchy.spawn(app.world_mut());
             // Run once to convert the `MenuSetting` and `MenuBuilder` into `TreeMenu`.
             app.update();
 
@@ -478,24 +477,24 @@ mod test {
         fn run_focus_on(&mut self, entity_name: &str) -> Vec<NavEvent> {
             let mut query = self.app.world_mut().query::<(Entity, &Name)>();
             let requested = query
-                .iter(&self.app.world())
+                .iter(self.app.world())
                 .find_map(|(e, name)| (&**name == entity_name).then(|| e))
                 .unwrap();
             self.app
                 .world_mut()
                 .send_event(NavRequest::FocusOn(requested));
             self.app.update();
-            receive_events(&mut self.app.world_mut())
+            receive_events(self.app.world_mut())
         }
         fn run_request(&mut self, request: NavRequest) -> Vec<NavEvent> {
             self.app.world_mut().send_event(request);
             self.app.update();
-            receive_events(&mut self.app.world_mut())
+            receive_events(self.app.world_mut())
         }
         fn state_of(&mut self, requested: &str) -> FocusState {
             let mut query = self.app.world_mut().query::<(&Focusable, &Name)>();
             let requested = query
-                .iter(&self.app.world())
+                .iter(self.app.world())
                 .find_map(|(focus, name)| (&**name == requested).then(|| focus));
             requested.unwrap().state()
         }

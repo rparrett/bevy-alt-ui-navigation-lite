@@ -17,31 +17,31 @@ pub struct InputMapping {
     /// Whether to use keybaord keys for navigation (instead of just actions).
     pub keyboard_navigation: bool,
     /// The gamepads to use for the UI. If empty, default to gamepad 0
-    pub gamepads: Vec<Gamepad>,
+    pub gamepads: Vec<Entity>,
     /// Deadzone on the gamepad left stick for ui navigation
     pub joystick_ui_deadzone: f32,
     /// X axis of gamepad stick
-    pub move_x: GamepadAxisType,
+    pub move_x: GamepadAxis,
     /// Y axis of gamepad stick
-    pub move_y: GamepadAxisType,
+    pub move_y: GamepadAxis,
     /// Gamepad button for [`Direction::West`] [`NavRequest::Move`]
-    pub left_button: GamepadButtonType,
+    pub left_button: GamepadButton,
     /// Gamepad button for [`Direction::East`] [`NavRequest::Move`]
-    pub right_button: GamepadButtonType,
+    pub right_button: GamepadButton,
     /// Gamepad button for [`Direction::North`] [`NavRequest::Move`]
-    pub up_button: GamepadButtonType,
+    pub up_button: GamepadButton,
     /// Gamepad button for [`Direction::South`] [`NavRequest::Move`]
-    pub down_button: GamepadButtonType,
+    pub down_button: GamepadButton,
     /// Gamepad button for [`NavRequest::Action`]
-    pub action_button: GamepadButtonType,
+    pub action_button: GamepadButton,
     /// Gamepad button for [`NavRequest::Cancel`]
-    pub cancel_button: GamepadButtonType,
+    pub cancel_button: GamepadButton,
     /// Gamepad button for [`ScopeDirection::Previous`] [`NavRequest::ScopeMove`]
-    pub previous_button: GamepadButtonType,
+    pub previous_button: GamepadButton,
     /// Gamepad button for [`ScopeDirection::Next`] [`NavRequest::ScopeMove`]
-    pub next_button: GamepadButtonType,
+    pub next_button: GamepadButton,
     /// Gamepad button for [`NavRequest::Unlock`]
-    pub free_button: GamepadButtonType,
+    pub free_button: GamepadButton,
     /// Keyboard key for [`Direction::West`] [`NavRequest::Move`]
     pub key_left: KeyCode,
     /// Keyboard key for [`Direction::East`] [`NavRequest::Move`]
@@ -79,19 +79,19 @@ impl Default for InputMapping {
     fn default() -> Self {
         InputMapping {
             keyboard_navigation: false,
-            gamepads: vec![Gamepad { id: 0 }],
+            gamepads: vec![],
             joystick_ui_deadzone: 0.36,
-            move_x: GamepadAxisType::LeftStickX,
-            move_y: GamepadAxisType::LeftStickY,
-            left_button: GamepadButtonType::DPadLeft,
-            right_button: GamepadButtonType::DPadRight,
-            up_button: GamepadButtonType::DPadUp,
-            down_button: GamepadButtonType::DPadDown,
-            action_button: GamepadButtonType::South,
-            cancel_button: GamepadButtonType::East,
-            previous_button: GamepadButtonType::LeftTrigger,
-            next_button: GamepadButtonType::RightTrigger,
-            free_button: GamepadButtonType::Start,
+            move_x: GamepadAxis::LeftStickX,
+            move_y: GamepadAxis::LeftStickY,
+            left_button: GamepadButton::DPadLeft,
+            right_button: GamepadButton::DPadRight,
+            up_button: GamepadButton::DPadUp,
+            down_button: GamepadButton::DPadDown,
+            action_button: GamepadButton::South,
+            cancel_button: GamepadButton::East,
+            previous_button: GamepadButton::LeftTrigger,
+            next_button: GamepadButton::RightTrigger,
+            free_button: GamepadButton::Start,
             key_left: KeyCode::KeyA,
             key_right: KeyCode::KeyD,
             key_up: KeyCode::KeyW,
@@ -130,8 +130,7 @@ pub fn default_gamepad_input(
     mut nav_cmds: EventWriter<NavRequest>,
     has_focused: Query<(), With<Focused>>,
     input_mapping: Res<InputMapping>,
-    buttons: Res<ButtonInput<GamepadButton>>,
-    axis: Res<Axis<GamepadAxis>>,
+    gamepads: Query<(Entity, &Gamepad)>,
     mut ui_input_status: Local<bool>,
 ) {
     use Direction::*;
@@ -142,11 +141,15 @@ pub fn default_gamepad_input(
         return;
     }
 
-    for &gamepad in &input_mapping.gamepads {
+    for (entity, gamepad) in &gamepads {
+        if !input_mapping.gamepads.is_empty() && !input_mapping.gamepads.contains(&entity) {
+            continue;
+        }
+
         macro_rules! axis_delta {
             ($dir:ident, $axis:ident) => {{
-                let axis_type = input_mapping.$axis;
-                axis.get(GamepadAxis { gamepad, axis_type })
+                gamepad
+                    .get(input_mapping.$axis)
                     .map_or(Vec2::ZERO, |v| Vec2::$dir * v)
             }};
         }
@@ -177,11 +180,7 @@ pub fn default_gamepad_input(
             input_mapping.previous_button => ScopeMove(ScopeDirection::Previous)
         };
         for (button_type, request) in command_mapping {
-            let button = GamepadButton {
-                gamepad,
-                button_type,
-            };
-            if buttons.just_pressed(button) {
+            if gamepad.just_pressed(button_type) {
                 nav_cmds.send(request);
             }
         }
@@ -256,7 +255,7 @@ pub struct NodePosQuery<'w, 's, T: Component> {
     >,
     boundaries: Option<Res<'w, ScreenBoundaries>>,
 }
-impl<'w, 's, T: Component> NodePosQuery<'w, 's, T> {
+impl<T: Component> NodePosQuery<'_, '_, T> {
     fn cursor_pos(&self, at: Vec2) -> Option<Vec2> {
         let boundaries = self.boundaries.as_ref()?;
         Some(at * boundaries.scale + boundaries.position)
@@ -302,7 +301,7 @@ pub trait ScreenSize {
     fn size(&self) -> Vec2;
 }
 
-impl ScreenSize for Node {
+impl ScreenSize for ComputedNode {
     fn size(&self) -> Vec2 {
         self.size()
     }
@@ -326,7 +325,7 @@ pub fn default_mouse_input(
     input_mapping: Res<InputMapping>,
     windows: Query<&Window, With<PrimaryWindow>>,
     mouse: Res<ButtonInput<MouseButton>>,
-    focusables: NodePosQuery<Node>,
+    focusables: NodePosQuery<ComputedNode>,
     focused: Query<Entity, With<Focused>>,
     nav_cmds: EventWriter<NavRequest>,
     last_pos: Local<Vec2>,

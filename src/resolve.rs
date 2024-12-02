@@ -147,7 +147,7 @@ pub(crate) struct NavQueries<'w, 's> {
     focusables: Query<'w, 's, (Entity, &'static Focusable), Without<TreeMenu>>,
     menus: Query<'w, 's, (Entity, &'static TreeMenu, &'static MenuSetting), Without<Focusable>>,
 }
-impl<'w, 's> NavQueries<'w, 's> {
+impl NavQueries<'_, '_> {
     fn active_menu(
         &self,
         mut entity: Entity,
@@ -248,7 +248,7 @@ pub(crate) struct MutQueries<'w, 's> {
     focusables: Query<'w, 's, &'static mut Focusable, Without<TreeMenu>>,
     menus: Query<'w, 's, &'static mut TreeMenu, Without<Focusable>>,
 }
-impl<'w, 's> MutQueries<'w, 's> {
+impl MutQueries<'_, '_> {
     /// Set the [`active_child`](TreeMenu::active_child) field of the enclosing
     /// [`TreeMenu`] and disables the previous one.
     fn set_active_child(&mut self, child: Entity) {
@@ -273,7 +273,7 @@ impl<'w, 's> MutQueries<'w, 's> {
     fn set_entity_focus(&mut self, entity: Entity, state: FocusState) {
         if let Ok(mut focusable) = self.focusables.get_mut(entity) {
             focusable.state = state;
-            self.commands.add(set_focus_state(entity, state));
+            self.commands.queue(set_focus_state(entity, state));
         }
     }
 
@@ -515,13 +515,12 @@ impl Focusable {
     ///
     /// ```rust
     /// # use bevy_alt_ui_navigation_lite::prelude::Focusable;
-    /// # use bevy_alt_ui_navigation_lite::components::FocusableButtonBundle;
     /// # use bevy::prelude::*;
     /// fn setup(mut commands: Commands) {
-    ///     commands.spawn(FocusableButtonBundle {
-    ///         focus: Focusable::new().prioritized(),
-    ///         ..default()
-    ///     });
+    ///     commands.spawn((
+    ///         Button,
+    ///         Focusable::new().prioritized()
+    ///     ));
     /// }
     /// ```
     pub fn prioritized(self) -> Self {
@@ -540,13 +539,12 @@ impl Focusable {
     ///
     /// ```rust
     /// # use bevy_alt_ui_navigation_lite::prelude::Focusable;
-    /// # use bevy_alt_ui_navigation_lite::components::FocusableButtonBundle;
     /// # use bevy::prelude::*;
     /// fn setup(mut commands: Commands) {
-    ///     commands.spawn(FocusableButtonBundle {
-    ///         focus: Focusable::new().blocked(),
-    ///         ..default()
-    ///     });
+    ///     commands.spawn((
+    ///         Button,
+    ///         Focusable::new().blocked()
+    ///     ));
     /// }
     /// ```
     pub fn blocked(self) -> Self {
@@ -617,7 +615,7 @@ impl Focusable {
 #[non_exhaustive]
 pub struct Focused;
 
-impl<'w, 's> MenuNavigationStrategy for UiProjectionQuery<'w, 's> {
+impl MenuNavigationStrategy for UiProjectionQuery<'_, '_> {
     fn resolve_2d<'a>(
         &self,
         focused: Entity,
@@ -946,7 +944,7 @@ pub(crate) fn parent_menu(
     }
 }
 
-impl<'w, 's> ChildQueries<'w, 's> {
+impl ChildQueries<'_, '_> {
     /// All sibling [`Focusable`]s within a single [`TreeMenu`].
     pub(crate) fn focusables_of(&self, menu: Entity) -> Vec<Entity> {
         use FocusState::Blocked;

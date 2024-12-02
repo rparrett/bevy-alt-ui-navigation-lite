@@ -5,14 +5,12 @@ use bevy::ecs::system::EntityCommands;
 use bevy::math::FloatOrd;
 use bevy::math::Vec3Swizzles;
 use bevy::prelude::*;
-use bevy::text::Text2dBounds;
 use bevy::utils::HashMap;
 use bevy::window::PrimaryWindow;
-use bevy_alt_ui_navigation_lite::prelude::{
-    FocusState, Focusable, Focused, MenuBuilder, MenuSetting, NavEvent, NavEventReaderExt,
-    NavRequest, NavRequestSystem, NavigationPlugin,
+use bevy_alt_ui_navigation_lite::{
+    prelude::*,
+    systems::{default_gamepad_input, InputMapping},
 };
-use bevy_alt_ui_navigation_lite::systems::{default_gamepad_input, InputMapping};
 
 /// This example demonstrates how to generate on the fly focusables to navigate.
 fn main() {
@@ -158,11 +156,6 @@ enum Animate {
 trait ScreenSize {
     fn size(&self) -> Vec2;
 }
-impl ScreenSize for Text2dBounds {
-    fn size(&self) -> Vec2 {
-        self.size
-    }
-}
 impl ScreenSize for Sprite {
     fn size(&self) -> Vec2 {
         self.custom_size.unwrap_or_default()
@@ -206,7 +199,7 @@ pub fn mouse_pointer_system(
     let Some((camera_transform, camera)) = camera.iter().next() else {
         return;
     };
-    let Some(world_cursor_pos) = camera.viewport_to_world(camera_transform, cursor_pos) else {
+    let Ok(world_cursor_pos) = camera.viewport_to_world(camera_transform, cursor_pos) else {
         return;
     };
     let world_cursor_pos = world_cursor_pos.get_point(0.0).truncate();
@@ -377,7 +370,7 @@ fn setup(mut commands: Commands, mut menus: ResMut<MenuMap>) {
         Upgrade::Plus(1)
     };
     let weapon = Weapon::new(name, upgrade);
-    commands.spawn((Camera2dBundle::default(), Animate::default()));
+    commands.spawn((Camera2d, Animate::default()));
     let at = IVec2::ZERO;
     let menu = spawn_weapon_upgrade_menu(&mut commands, at, &weapon, None);
     menus.grid.insert(at, menu);
@@ -401,8 +394,8 @@ fn button_system(
 
 /// Handles the [`Animate`] component.
 fn animate_system(mut animated: Query<(&Animate, &mut Transform)>, time: Res<Time>) {
-    let delta = time.delta_seconds();
-    let current_time = time.elapsed_seconds_f64();
+    let delta = time.delta_secs();
+    let current_time = time.elapsed_secs_f64();
     for (animate, mut transform) in &mut animated {
         let current_z = transform.translation.z;
         let current = transform.translation.xy();
@@ -500,7 +493,7 @@ fn upgrade_weapon(
                 Ok(cam) => cam,
                 Err(_) => continue,
             };
-            let half_second = time.elapsed_seconds_f64() + 0.5;
+            let half_second = time.elapsed_secs_f64() + 0.5;
             *animate = Animate::Shake {
                 until: half_second,
                 direction,
@@ -511,33 +504,28 @@ fn upgrade_weapon(
 }
 
 /// Boilerplate to create a `Sprite` with some text inside of it.
-fn spawn_button(
-    commands: &mut EntityCommands,
-    color: Color,
-    at: Vec2,
-    text_style: TextStyle,
-    text: String,
-) {
+fn spawn_button(commands: &mut EntityCommands, color: Color, at: Vec2, text: String) {
     let item_position = |at: Vec2| Transform::from_translation(at.extend(0.05));
     commands
         .insert((
-            SpriteBundle {
-                sprite: Sprite {
-                    color,
-                    custom_size: Some(Vec2::new(BUTTON_WIDTH, FONT_SIZE + 2.0 * BUTTON_HPADDING)),
-                    ..default()
-                },
-                transform: item_position(at),
+            Sprite {
+                color,
+                custom_size: Some(Vec2::new(BUTTON_WIDTH, FONT_SIZE + 2.0 * BUTTON_HPADDING)),
                 ..default()
             },
+            item_position(at),
             BaseColor(color),
         ))
         .with_children(|commands| {
-            commands.spawn(Text2dBundle {
-                text: Text::from_section(text, text_style).with_justify(JustifyText::Center),
-                transform: item_position(Vec2::ZERO),
-                ..default()
-            });
+            commands.spawn((
+                Text2d::new(text),
+                TextFont {
+                    font_size: FONT_SIZE,
+                    ..default()
+                },
+                TextLayout::new_with_justify(JustifyText::Center),
+                item_position(Vec2::ZERO),
+            ));
         });
 }
 
@@ -555,24 +543,17 @@ fn spawn_weapon_upgrade_menu(
 
     let menu_grid_offset = Vec2::new(MENU_WIDTH, MENU_HEIGHT) + MENU_GAP;
     let at = position.as_vec2() * menu_grid_offset;
-    let text_style = || TextStyle {
-        font_size: FONT_SIZE,
-        ..default()
-    };
     let item_position = |at: Vec2| Transform::from_translation(at.extend(0.1));
     // Rectangle
     commands
         .spawn((
-            SpriteBundle {
-                sprite: Sprite {
-                    // TODO: random color
-                    color: Color::srgb(0.25, 0.25, 0.75),
-                    custom_size: Some(Vec2::new(MENU_WIDTH, MENU_HEIGHT)),
-                    ..default()
-                },
-                transform: item_position(at),
+            Sprite {
+                // TODO: random color
+                color: Color::srgb(0.25, 0.25, 0.75),
+                custom_size: Some(Vec2::new(MENU_WIDTH, MENU_HEIGHT)),
                 ..default()
             },
+            item_position(at),
             Menu {
                 weapon: weapon.clone(),
                 position,
@@ -583,14 +564,15 @@ fn spawn_weapon_upgrade_menu(
         ))
         .with_children(|commands| {
             // Weapon name
-            commands.spawn(Text2dBundle {
-                text: Text::from_section(weapon.to_string(), text_style())
-                    .with_justify(JustifyText::Center),
-                transform: item_position(
-                    Vec2::Y * (MENU_HEIGHT / 2.0 - MENU_PADDING - FONT_SIZE / 2.0),
-                ),
-                ..default()
-            });
+            commands.spawn((
+                Text2d::new(weapon.to_string()),
+                TextFont {
+                    font_size: FONT_SIZE,
+                    ..default()
+                },
+                TextLayout::new_with_justify(JustifyText::Center),
+                item_position(Vec2::Y * (MENU_HEIGHT / 2.0 - MENU_PADDING - FONT_SIZE / 2.0)),
+            ));
 
             // buttons
             let upgrades = [
@@ -608,7 +590,7 @@ fn spawn_weapon_upgrade_menu(
                 let button_pos = Vec2::new(button_x, -button_y);
                 let text = upgrade.to_string();
                 let mut entity = commands.spawn((Focusable::default(), upgrade, direction));
-                spawn_button(&mut entity, CRIMSON.into(), button_pos, text_style(), text);
+                spawn_button(&mut entity, CRIMSON.into(), button_pos, text);
             }
         })
         .id()

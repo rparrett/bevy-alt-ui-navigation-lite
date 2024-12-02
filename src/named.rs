@@ -32,7 +32,7 @@ pub(crate) fn resolve_named_menus(
     use MenuBuilder::{EntityParent, NamedParent, Root};
     let each_second = || {
         let Some(time) = &time else { return true };
-        time.elapsed_seconds_f64().fract() < time.delta_seconds_f64()
+        time.elapsed_secs_f64().fract() < time.delta_secs_f64()
     };
     for (entity, mut builder) in &mut unresolved {
         let parent_name = match &mut *builder {

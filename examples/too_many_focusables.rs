@@ -32,13 +32,16 @@ fn main() {
 struct IdleColor(Color);
 
 fn button_system(
-    mut interaction_query: Query<(&Focusable, &mut UiImage, &IdleColor), Changed<Focusable>>,
+    mut interaction_query: Query<
+        (&Focusable, &mut BackgroundColor, &IdleColor),
+        Changed<Focusable>,
+    >,
 ) {
-    for (focusable, mut image, IdleColor(idle_color)) in interaction_query.iter_mut() {
+    for (focusable, mut color, IdleColor(idle_color)) in interaction_query.iter_mut() {
         if let FocusState::Focused = focusable.state() {
-            image.color = ORANGE_RED.into();
+            color.0 = ORANGE_RED.into();
         } else {
-            image.color = *idle_color;
+            color.0 = *idle_color;
         }
     }
 }
@@ -57,8 +60,8 @@ fn non_stop_move(
     time: Res<Time>,
     mut last_direction: Local<MyDirection>,
 ) {
-    let delta = time.delta_seconds_f64();
-    let current_time = time.elapsed_seconds_f64();
+    let delta = time.delta_secs_f64();
+    let current_time = time.elapsed_secs_f64();
     let at_interval = |t: f64| current_time % t < delta;
     if input.just_pressed(KeyCode::KeyK) {
         *enabled = !*enabled;
@@ -85,21 +88,17 @@ fn setup(mut commands: Commands, mut input_mapping: ResMut<InputMapping>) {
     input_mapping.focus_follows_mouse = true;
     let top = 310;
     let as_rainbow = |i: u32| Color::hsl((i as f32 / top as f32) * 360.0, 0.9, 0.8);
-    commands.spawn(Camera2dBundle::default());
+    commands.spawn(Camera2d);
     commands
-        .spawn(NodeBundle {
-            style: Style {
-                // position_type: PositionType::Absolute,
-                width: Pct(100.),
-                height: Pct(100.),
-                ..default()
-            },
+        .spawn(Node {
+            width: Pct(100.),
+            height: Pct(100.),
             ..default()
         })
         .with_children(|commands| {
             for i in 0..top {
                 for j in 0..top {
-                    spawn_button(commands, as_rainbow(j % i.max(1)).into(), top, i, j);
+                    spawn_button(commands, as_rainbow(j % i.max(1)), top, i, j);
                 }
             }
         });
@@ -108,18 +107,16 @@ fn spawn_button(commands: &mut ChildBuilder, color: Color, max: u32, i: u32, j: 
     use Val::Percent as Pct;
     let width = 90.0 / max as f32;
     commands.spawn((
-        ButtonBundle {
-            style: Style {
-                width: Pct(width),
-                height: Pct(width),
-                bottom: Pct((100.0 / max as f32) * i as f32),
-                left: Pct((100.0 / max as f32) * j as f32),
-                position_type: PositionType::Absolute,
-                ..Default::default()
-            },
-            image: UiImage::default().with_color(color),
+        Button,
+        Node {
+            width: Pct(width),
+            height: Pct(width),
+            bottom: Pct((100.0 / max as f32) * i as f32),
+            left: Pct((100.0 / max as f32) * j as f32),
+            position_type: PositionType::Absolute,
             ..Default::default()
         },
+        BackgroundColor(color),
         Focusable::default(),
         IdleColor(color),
     ));

@@ -58,8 +58,8 @@ impl Gameui {
 #[derive(Resource)]
 struct Materials {
     background: Color,
-    rarrow: UiImage,
-    circle: UiImage,
+    rarrow: Handle<Image>,
+    circle: Handle<Image>,
 }
 
 impl FromWorld for Materials {
@@ -67,8 +67,8 @@ impl FromWorld for Materials {
         let assets = world.get_resource::<AssetServer>().unwrap();
         Materials {
             background: BLACK.into(),
-            rarrow: assets.load("rarrow.png").into(),
-            circle: assets.load("green_circle.png").into(),
+            rarrow: assets.load("rarrow.png"),
+            circle: assets.load("green_circle.png"),
         }
     }
 }
@@ -110,21 +110,19 @@ fn handle_nav_events(
     }
 }
 
-fn menu(materials: &Materials) -> NodeBundle {
-    let style = Style {
-        width: Val::Percent(20.0),
-        height: Val::Percent(95.0),
-        flex_direction: FlexDirection::Column,
-        flex_wrap: FlexWrap::Wrap,
-        justify_content: JustifyContent::Center,
-        align_content: AlignContent::Stretch,
-        ..Default::default()
-    };
-    NodeBundle {
-        style,
-        background_color: materials.background.into(),
-        ..Default::default()
-    }
+fn menu(materials: &Materials) -> impl Bundle {
+    (
+        Node {
+            width: Val::Percent(20.0),
+            height: Val::Percent(95.0),
+            flex_direction: FlexDirection::Column,
+            flex_wrap: FlexWrap::Wrap,
+            justify_content: JustifyContent::Center,
+            align_content: AlignContent::Stretch,
+            ..Default::default()
+        },
+        BackgroundColor(materials.background),
+    )
 }
 fn setup(
     mut commands: Commands,
@@ -134,37 +132,26 @@ fn setup(
 ) {
     input_mapping.keyboard_navigation = true;
     // ui camera
-    commands.spawn(Camera2dBundle::default());
+    commands.spawn(Camera2d);
 
     let pct = Val::Percent;
-    let style = Style {
+    let node = Node {
         position_type: PositionType::Absolute,
         flex_direction: FlexDirection::Row,
         width: pct(100.),
         height: pct(100.),
         ..Default::default()
     };
-    let bundle = NodeBundle {
-        style,
-        ..Default::default()
-    };
-    let image_style = Style {
+    let image_node = Node {
         width: pct(100.),
         height: pct(100.),
         ..Default::default()
     };
-    let rarrow = || ImageBundle {
-        style: image_style.clone(),
-        image: materials.rarrow.clone(),
-        ..Default::default()
-    };
-    let circle = || ImageBundle {
-        style: image_style.clone(),
-        image: materials.circle.clone(),
-        ..Default::default()
-    };
 
-    commands.spawn(bundle).with_children(|commands| {
+    let rarrow = || (ImageNode::new(materials.rarrow.clone()), image_node.clone());
+    let circle = || (ImageNode::new(materials.circle.clone()), image_node.clone());
+
+    commands.spawn(node).with_children(|commands| {
         let mut next_menu_button: Option<Entity> = None;
         for j in 0..5 {
             commands
@@ -209,16 +196,16 @@ fn setup(
         }
     });
 }
-fn button() -> ButtonBundle {
+fn button() -> impl Bundle {
     let pct = Val::Percent;
-    let style = Style {
-        width: pct(95.),
-        height: pct(12.),
-        margin: UiRect::all(Val::Percent(3.0)),
-        ..Default::default()
-    };
-    ButtonBundle {
-        style,
-        ..Default::default()
-    }
+
+    (
+        Button,
+        Node {
+            width: pct(95.),
+            height: pct(12.),
+            margin: UiRect::all(Val::Percent(3.0)),
+            ..Default::default()
+        },
+    )
 }
