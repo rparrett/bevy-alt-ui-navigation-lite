@@ -301,7 +301,7 @@ pub trait ScreenSize {
     fn size(&self) -> Vec2;
 }
 
-impl ScreenSize for Node {
+impl ScreenSize for ComputedNode {
     fn size(&self) -> Vec2 {
         self.size()
     }
@@ -325,7 +325,7 @@ pub fn default_mouse_input(
     input_mapping: Res<InputMapping>,
     windows: Query<&Window, With<PrimaryWindow>>,
     mouse: Res<ButtonInput<MouseButton>>,
-    focusables: NodePosQuery<Node>,
+    focusables: NodePosQuery<ComputedNode>,
     focused: Query<Entity, With<Focused>>,
     nav_cmds: EventWriter<NavRequest>,
     last_pos: Local<Vec2>,
