@@ -38,7 +38,6 @@
 #![allow(clippy::unnecessary_lazy_evaluations)]
 
 mod commands;
-pub mod components;
 pub mod events;
 mod marker;
 pub mod menu;
