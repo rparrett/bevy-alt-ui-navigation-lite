@@ -5,7 +5,7 @@ use bevy::ecs::system::EntityCommands;
 use bevy::math::FloatOrd;
 use bevy::math::Vec3Swizzles;
 use bevy::prelude::*;
-use bevy::text::Text2dBounds;
+use bevy::text::TextBounds;
 use bevy::utils::HashMap;
 use bevy::window::PrimaryWindow;
 use bevy_alt_ui_navigation_lite::prelude::{
@@ -158,9 +158,9 @@ enum Animate {
 trait ScreenSize {
     fn size(&self) -> Vec2;
 }
-impl ScreenSize for Text2dBounds {
+impl ScreenSize for TextBounds {
     fn size(&self) -> Vec2 {
-        self.size
+        TextBounds::size(self)
     }
 }
 impl ScreenSize for Sprite {
@@ -206,7 +206,7 @@ pub fn mouse_pointer_system(
     let Some((camera_transform, camera)) = camera.iter().next() else {
         return;
     };
-    let Some(world_cursor_pos) = camera.viewport_to_world(camera_transform, cursor_pos) else {
+    let Ok(world_cursor_pos) = camera.viewport_to_world(camera_transform, cursor_pos) else {
         return;
     };
     let world_cursor_pos = world_cursor_pos.get_point(0.0).truncate();
