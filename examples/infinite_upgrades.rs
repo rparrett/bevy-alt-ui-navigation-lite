@@ -370,7 +370,7 @@ fn setup(mut commands: Commands, mut menus: ResMut<MenuMap>) {
         Upgrade::Plus(1)
     };
     let weapon = Weapon::new(name, upgrade);
-    commands.spawn((Camera2d::default(), Animate::default()));
+    commands.spawn((Camera2d, Animate::default()));
     let at = IVec2::ZERO;
     let menu = spawn_weapon_upgrade_menu(&mut commands, at, &weapon, None);
     menus.grid.insert(at, menu);

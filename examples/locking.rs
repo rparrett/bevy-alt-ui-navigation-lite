@@ -63,7 +63,7 @@ impl FromWorld for Images {
     fn from_world(world: &mut World) -> Self {
         let assets = world.get_resource::<AssetServer>().unwrap();
         Images {
-            lock: assets.load("lock.png").into(),
+            lock: assets.load("lock.png"),
         }
     }
 }
@@ -72,7 +72,7 @@ fn setup(mut commands: Commands, imgs: Res<Images>) {
     use Val::Percent as Pct;
     let center_pct = |v: usize| Pct((v as f32) * 25.0 + 25.0);
     // ui camera
-    commands.spawn(Camera2d::default());
+    commands.spawn(Camera2d);
     commands
         .spawn(Node {
             position_type: PositionType::Absolute,

@@ -88,7 +88,7 @@ fn setup(mut commands: Commands, mut input_mapping: ResMut<InputMapping>) {
     input_mapping.focus_follows_mouse = true;
     let top = 310;
     let as_rainbow = |i: u32| Color::hsl((i as f32 / top as f32) * 360.0, 0.9, 0.8);
-    commands.spawn(Camera2d::default());
+    commands.spawn(Camera2d);
     commands
         .spawn(Node {
             width: Pct(100.),
@@ -98,7 +98,7 @@ fn setup(mut commands: Commands, mut input_mapping: ResMut<InputMapping>) {
         .with_children(|commands| {
             for i in 0..top {
                 for j in 0..top {
-                    spawn_button(commands, as_rainbow(j % i.max(1)).into(), top, i, j);
+                    spawn_button(commands, as_rainbow(j % i.max(1)), top, i, j);
                 }
             }
         });

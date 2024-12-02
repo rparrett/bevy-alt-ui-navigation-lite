@@ -45,7 +45,7 @@ fn setup(mut commands: Commands, mut input_mapping: ResMut<InputMapping>) {
     input_mapping.keyboard_navigation = true;
     input_mapping.focus_follows_mouse = true;
     // ui camera
-    commands.spawn(Camera2d::default());
+    commands.spawn(Camera2d);
     let positions = [
         Vec2::new(10.0, 10.0),
         Vec2::new(15.0, 50.0),

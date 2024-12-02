@@ -132,7 +132,7 @@ fn setup(
 ) {
     input_mapping.keyboard_navigation = true;
     // ui camera
-    commands.spawn(Camera2d::default());
+    commands.spawn(Camera2d);
 
     let pct = Val::Percent;
     let node = Node {

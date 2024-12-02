@@ -226,7 +226,7 @@ pub struct NavEventReader<'w, 's, 'a> {
     event_reader: &'a mut EventReader<'w, 's, NavEvent>,
 }
 
-impl<'w, 's, 'a> NavEventReader<'w, 's, 'a> {
+impl NavEventReader<'_, '_, '_> {
     /// Iterate over [`NavEvent::NoChanges`] focused entity
     /// triggered by `request` type requests.
     pub fn with_request(&mut self, request: NavRequest) -> impl Iterator<Item = Entity> + '_ {

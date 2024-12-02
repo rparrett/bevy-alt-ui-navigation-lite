@@ -147,7 +147,7 @@ pub(crate) struct NavQueries<'w, 's> {
     focusables: Query<'w, 's, (Entity, &'static Focusable), Without<TreeMenu>>,
     menus: Query<'w, 's, (Entity, &'static TreeMenu, &'static MenuSetting), Without<Focusable>>,
 }
-impl<'w, 's> NavQueries<'w, 's> {
+impl NavQueries<'_, '_> {
     fn active_menu(
         &self,
         mut entity: Entity,
@@ -248,7 +248,7 @@ pub(crate) struct MutQueries<'w, 's> {
     focusables: Query<'w, 's, &'static mut Focusable, Without<TreeMenu>>,
     menus: Query<'w, 's, &'static mut TreeMenu, Without<Focusable>>,
 }
-impl<'w, 's> MutQueries<'w, 's> {
+impl MutQueries<'_, '_> {
     /// Set the [`active_child`](TreeMenu::active_child) field of the enclosing
     /// [`TreeMenu`] and disables the previous one.
     fn set_active_child(&mut self, child: Entity) {
@@ -617,7 +617,7 @@ impl Focusable {
 #[non_exhaustive]
 pub struct Focused;
 
-impl<'w, 's> MenuNavigationStrategy for UiProjectionQuery<'w, 's> {
+impl MenuNavigationStrategy for UiProjectionQuery<'_, '_> {
     fn resolve_2d<'a>(
         &self,
         focused: Entity,
@@ -946,7 +946,7 @@ pub(crate) fn parent_menu(
     }
 }
 
-impl<'w, 's> ChildQueries<'w, 's> {
+impl ChildQueries<'_, '_> {
     /// All sibling [`Focusable`]s within a single [`TreeMenu`].
     pub(crate) fn focusables_of(&self, menu: Entity) -> Vec<Entity> {
         use FocusState::Blocked;

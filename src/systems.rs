@@ -255,7 +255,7 @@ pub struct NodePosQuery<'w, 's, T: Component> {
     >,
     boundaries: Option<Res<'w, ScreenBoundaries>>,
 }
-impl<'w, 's, T: Component> NodePosQuery<'w, 's, T> {
+impl<T: Component> NodePosQuery<'_, '_, T> {
     fn cursor_pos(&self, at: Vec2) -> Option<Vec2> {
         let boundaries = self.boundaries.as_ref()?;
         Some(at * boundaries.scale + boundaries.position)

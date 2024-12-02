@@ -93,7 +93,7 @@ fn setup(mut commands: Commands) {
     use FlexDirection::{Column, Row};
     use Val::{Percent as Pct, Px};
     // ui camera
-    commands.spawn(Camera2d::default());
+    commands.spawn(Camera2d);
 
     // First argument to `bndl!` is the color of the node, second is the Style
     macro_rules! bndl {
