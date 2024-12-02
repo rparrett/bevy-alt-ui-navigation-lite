@@ -515,13 +515,12 @@ impl Focusable {
     ///
     /// ```rust
     /// # use bevy_alt_ui_navigation_lite::prelude::Focusable;
-    /// # use bevy_alt_ui_navigation_lite::components::FocusableButtonBundle;
     /// # use bevy::prelude::*;
     /// fn setup(mut commands: Commands) {
-    ///     commands.spawn(FocusableButtonBundle {
-    ///         focus: Focusable::new().prioritized(),
-    ///         ..default()
-    ///     });
+    ///     commands.spawn((
+    ///         Button,
+    ///         Focusable::new().prioritized()
+    ///     ));
     /// }
     /// ```
     pub fn prioritized(self) -> Self {
@@ -540,13 +539,12 @@ impl Focusable {
     ///
     /// ```rust
     /// # use bevy_alt_ui_navigation_lite::prelude::Focusable;
-    /// # use bevy_alt_ui_navigation_lite::components::FocusableButtonBundle;
     /// # use bevy::prelude::*;
     /// fn setup(mut commands: Commands) {
-    ///     commands.spawn(FocusableButtonBundle {
-    ///         focus: Focusable::new().blocked(),
-    ///         ..default()
-    ///     });
+    ///     commands.spawn((
+    ///         Button,
+    ///         Focusable::new().blocked()
+    ///     ));
     /// }
     /// ```
     pub fn blocked(self) -> Self {
