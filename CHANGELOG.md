@@ -1,3 +1,7 @@
+# 0.3.0
+
+* Update to Bevy 0.15
+
 # 0.2.0
 
 * Upgrade to Bevy 0.14
