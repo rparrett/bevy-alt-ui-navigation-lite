@@ -1,9 +1,8 @@
 use bevy::{color::palettes::css::*, prelude::*};
 
-use bevy_alt_ui_navigation_lite::mark::{NavMarker, NavMarkerPropagationPlugin};
-use bevy_alt_ui_navigation_lite::prelude::{
-    DefaultNavigationPlugins, FocusState, Focusable, Focused, MenuBuilder, MenuSetting,
-    NavRequestSystem,
+use bevy_alt_ui_navigation_lite::{
+    mark::{NavMarker, NavMarkerPropagationPlugin},
+    prelude::*,
 };
 
 macro_rules! column_type {

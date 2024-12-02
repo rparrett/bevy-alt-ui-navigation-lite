@@ -1,8 +1,6 @@
 use bevy::{color::palettes::css::*, prelude::*};
 
-use bevy_alt_ui_navigation_lite::prelude::{
-    DefaultNavigationPlugins, FocusState, Focusable, NavEvent, NavRequest, NavRequestSystem,
-};
+use bevy_alt_ui_navigation_lite::prelude::*;
 
 /// This example illustrates how to make a button "lock". To lock the UI, press
 /// 'A' on controller or 'left click' on mouse when the button with the lock is

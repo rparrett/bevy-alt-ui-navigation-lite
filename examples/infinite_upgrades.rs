@@ -8,11 +8,10 @@ use bevy::prelude::*;
 use bevy::text::TextBounds;
 use bevy::utils::HashMap;
 use bevy::window::PrimaryWindow;
-use bevy_alt_ui_navigation_lite::prelude::{
-    FocusState, Focusable, Focused, MenuBuilder, MenuSetting, NavEvent, NavEventReaderExt,
-    NavRequest, NavRequestSystem, NavigationPlugin,
+use bevy_alt_ui_navigation_lite::{
+    prelude::*,
+    systems::{default_gamepad_input, InputMapping},
 };
-use bevy_alt_ui_navigation_lite::systems::{default_gamepad_input, InputMapping};
 
 /// This example demonstrates how to generate on the fly focusables to navigate.
 fn main() {

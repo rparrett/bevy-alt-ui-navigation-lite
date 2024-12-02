@@ -1,9 +1,6 @@
 use bevy::{color::palettes::css::*, prelude::*};
 
-use bevy_alt_ui_navigation_lite::{
-    prelude::{DefaultNavigationPlugins, FocusState, Focusable, NavEvent, NavRequestSystem},
-    systems::InputMapping,
-};
+use bevy_alt_ui_navigation_lite::{prelude::*, systems::InputMapping};
 
 /// This example illustrates how to mark buttons as focusable and let
 /// NavigationPlugin figure out how to go from one to another.
