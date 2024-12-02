@@ -26,12 +26,14 @@ fn main() {
         .run();
 }
 
-fn button_system(mut interaction_query: Query<(&Focusable, &mut ImageNode), Changed<Focusable>>) {
-    for (focusable, mut image) in interaction_query.iter_mut() {
+fn button_system(
+    mut interaction_query: Query<(&Focusable, &mut BackgroundColor), Changed<Focusable>>,
+) {
+    for (focusable, mut color) in interaction_query.iter_mut() {
         if let FocusState::Focused = focusable.state() {
-            image.color = ORANGE_RED.into();
+            color.0 = ORANGE_RED.into();
         } else {
-            image.color = DARK_GRAY.into();
+            color.0 = DARK_GRAY.into();
         }
     }
 }
