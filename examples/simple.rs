@@ -26,7 +26,7 @@ fn main() {
         .run();
 }
 
-fn button_system(mut interaction_query: Query<(&Focusable, &mut UiImage), Changed<Focusable>>) {
+fn button_system(mut interaction_query: Query<(&Focusable, &mut ImageNode), Changed<Focusable>>) {
     for (focusable, mut image) in interaction_query.iter_mut() {
         if let FocusState::Focused = focusable.state() {
             image.color = ORANGE_RED.into();
@@ -46,7 +46,7 @@ fn setup(mut commands: Commands, mut input_mapping: ResMut<InputMapping>) {
     input_mapping.keyboard_navigation = true;
     input_mapping.focus_follows_mouse = true;
     // ui camera
-    commands.spawn(Camera2dBundle::default());
+    commands.spawn(Camera2d::default());
     let positions = [
         Vec2::new(10.0, 10.0),
         Vec2::new(15.0, 50.0),
@@ -59,13 +59,10 @@ fn setup(mut commands: Commands, mut input_mapping: ResMut<InputMapping>) {
         Vec2::new(50.0, 90.0),
     ];
     commands
-        .spawn(NodeBundle {
-            style: Style {
-                position_type: PositionType::Absolute,
-                width: Val::Percent(100.0),
-                height: Val::Percent(100.0),
-                ..Default::default()
-            },
+        .spawn(Node {
+            position_type: PositionType::Absolute,
+            width: Val::Percent(100.0),
+            height: Val::Percent(100.0),
             ..Default::default()
         })
         .with_children(|commands| {
@@ -76,18 +73,16 @@ fn setup(mut commands: Commands, mut input_mapping: ResMut<InputMapping>) {
 }
 fn spawn_button(position: Vec2, commands: &mut ChildBuilder) {
     commands.spawn((
-        ButtonBundle {
-            style: Style {
-                width: Val::Px(95.0),
-                height: Val::Px(65.0),
-                left: Val::Percent(position.x),
-                top: Val::Percent(position.y),
-                position_type: PositionType::Absolute,
-                ..Default::default()
-            },
-            image: UiImage::default().with_color(DARK_GRAY.into()),
+        Button,
+        Node {
+            width: Val::Px(95.0),
+            height: Val::Px(65.0),
+            left: Val::Percent(position.x),
+            top: Val::Percent(position.y),
+            position_type: PositionType::Absolute,
             ..Default::default()
         },
+        BackgroundColor(DARK_GRAY.into()),
         // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
         // 2. Add the `Focusable` component to the navigable Entity
         Focusable::default(),
