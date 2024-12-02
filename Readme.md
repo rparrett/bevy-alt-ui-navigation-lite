@@ -13,7 +13,7 @@ Offered with limited support -- I plan to keep this updated with the latest Bevy
 
 ```toml
 [dependencies]
-bevy-alt-ui-navigation-lite = "0.2"
+bevy-alt-ui-navigation-lite = "0.3"
 ```
 
 ## Changelog
@@ -24,6 +24,7 @@ See the changelog at [`CHANGELOG.md`](./CHANGELOG.md)
 
 | `bevy` | `bevy-alt-ui-navigation-lite` |
 |------|------|
+| 0.15 | 0.3  |
 | 0.14 | 0.2  |
 | 0.13 | 0.1  |
 
