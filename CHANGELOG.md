@@ -1,3 +1,7 @@
+# 0.3.1
+
+* Fix logical coords being used for cursor position
+
 # 0.3.0
 
 * Update to Bevy 0.15
