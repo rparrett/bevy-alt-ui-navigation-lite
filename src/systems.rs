@@ -290,7 +290,7 @@ where
 }
 
 fn cursor_pos(window: &Window) -> Option<Vec2> {
-    window.cursor_position()
+    window.physical_cursor_position()
 }
 
 /// Something that has a size on screen.
