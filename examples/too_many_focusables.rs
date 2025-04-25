@@ -68,7 +68,7 @@ fn non_stop_move(
     }
     if *enabled {
         for _ in 0..10 {
-            requests.send(NavRequest::Move(last_direction.0));
+            requests.write(NavRequest::Move(last_direction.0));
         }
     }
     if at_interval(2.0) {
@@ -103,7 +103,7 @@ fn setup(mut commands: Commands, mut input_mapping: ResMut<InputMapping>) {
             }
         });
 }
-fn spawn_button(commands: &mut ChildBuilder, color: Color, max: u32, i: u32, j: u32) {
+fn spawn_button(commands: &mut ChildSpawnerCommands, color: Color, max: u32, i: u32, j: u32) {
     use Val::Percent as Pct;
     let width = 90.0 / max as f32;
     commands.spawn((

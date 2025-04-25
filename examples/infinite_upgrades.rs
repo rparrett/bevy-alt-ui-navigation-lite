@@ -4,8 +4,8 @@ use bevy::color::palettes::css::*;
 use bevy::ecs::system::EntityCommands;
 use bevy::math::FloatOrd;
 use bevy::math::Vec3Swizzles;
+use bevy::platform::collections::HashMap;
 use bevy::prelude::*;
-use bevy::utils::HashMap;
 use bevy::window::PrimaryWindow;
 use bevy_alt_ui_navigation_lite::{
     prelude::*,
@@ -190,7 +190,7 @@ pub fn mouse_pointer_system(
     if camera_moving.iter().next().is_some() {
         return;
     }
-    let Ok(window) = primary_query.get_single() else {
+    let Ok(window) = primary_query.single() else {
         return;
     };
     let Some(cursor_pos) = window.cursor_position() else {
@@ -205,7 +205,7 @@ pub fn mouse_pointer_system(
     let world_cursor_pos = world_cursor_pos.get_point(0.0).truncate();
     let released = mouse.just_released(MouseButton::Left);
     let pressing = mouse.pressed(MouseButton::Left);
-    let Ok(focused) = focused.get_single() else {
+    let Ok(focused) = focused.single() else {
         return;
     };
     let under_mouse = focusables
@@ -218,10 +218,10 @@ pub fn mouse_pointer_system(
     };
     let hover_focused = under_mouse == Some(focused);
     if (pressing || released) && !hover_focused {
-        nav_cmds.send(NavRequest::FocusOn(to_target));
+        nav_cmds.write(NavRequest::FocusOn(to_target));
     }
     if released {
-        nav_cmds.send(NavRequest::Action);
+        nav_cmds.write(NavRequest::Action);
     }
 }
 
@@ -443,7 +443,7 @@ fn handle_menu_change(
                         Ok(pos) => pos,
                         Err(_) => continue,
                     };
-                    let mut animate = match cam.get_single_mut() {
+                    let mut animate = match cam.single_mut() {
                         Ok(cam) => cam,
                         Err(_) => continue,
                     };
@@ -486,10 +486,10 @@ fn upgrade_weapon(
             // the current weapon upgrade.
             let menu = spawn_weapon_upgrade_menu(&mut commands, at, &weapon, Some(entity));
             menus.grid.insert(at, menu);
-            requests.send(NavRequest::Action);
+            requests.write(NavRequest::Action);
         } else {
             let direction = direction.as_ivec2().as_vec2();
-            let mut animate = match cam.get_single_mut() {
+            let mut animate = match cam.single_mut() {
                 Ok(cam) => cam,
                 Err(_) => continue,
             };

@@ -37,9 +37,9 @@
 //! navigation resolution and mutably for updating them with the new navigation state.
 use std::num::NonZeroUsize;
 
+use bevy::ecs::hierarchy::{ChildOf, Children};
 #[cfg(feature = "bevy_reflect")]
 use bevy::ecs::reflect::{ReflectComponent, ReflectResource};
-use bevy::hierarchy::{Children, Parent};
 use bevy::log::{debug, warn};
 use bevy::prelude::{Changed, FromWorld};
 #[cfg(feature = "bevy_reflect")]
@@ -47,8 +47,8 @@ use bevy::reflect::Reflect;
 use bevy::{
     ecs::{
         event::{EventReader, EventWriter},
-        prelude::{Commands, Component, Entity, ParamSet, Query, ResMut, With, Without},
-        system::{Resource, StaticSystemParam, SystemParam, SystemParamItem},
+        prelude::{Commands, Component, Entity, ParamSet, Query, ResMut, Resource, With, Without},
+        system::{StaticSystemParam, SystemParam, SystemParamItem},
     },
     math::Vec2,
 };
@@ -143,7 +143,7 @@ pub struct UiProjectionQuery<'w, 's> {
 #[derive(SystemParam)]
 pub(crate) struct NavQueries<'w, 's> {
     pub(crate) children: ChildQueries<'w, 's>,
-    parents: Query<'w, 's, &'static Parent>,
+    parents: Query<'w, 's, &'static ChildOf>,
     focusables: Query<'w, 's, (Entity, &'static Focusable), Without<TreeMenu>>,
     menus: Query<'w, 's, (Entity, &'static TreeMenu, &'static MenuSetting), Without<Focusable>>,
 }
@@ -176,7 +176,7 @@ impl NavQueries<'_, '_> {
 
     /// The [`TreeMenu`] containing `focusable`, if any.
     pub(crate) fn parent_menu(&self, focusable: Entity) -> Option<(Entity, TreeMenu, MenuSetting)> {
-        let parent = self.parents.get(focusable).ok()?.get();
+        let parent = self.parents.get(focusable).ok()?.parent();
         match self.menus.get(parent) {
             Ok((_, tree, setting)) => Some((parent, tree.clone(), *setting)),
             Err(_) => self.parent_menu(parent),
@@ -244,7 +244,7 @@ impl NavQueries<'_, '_> {
 #[derive(SystemParam)]
 pub(crate) struct MutQueries<'w, 's> {
     commands: Commands<'w, 's>,
-    parents: Query<'w, 's, &'static Parent>,
+    parents: Query<'w, 's, &'static ChildOf>,
     focusables: Query<'w, 's, &'static mut Focusable, Without<TreeMenu>>,
     menus: Query<'w, 's, &'static mut TreeMenu, Without<Focusable>>,
 }
@@ -256,7 +256,7 @@ impl MutQueries<'_, '_> {
         let mut nav_menu = loop {
             // Find the enclosing parent menu.
             if let Ok(parent) = self.parents.get(focusable) {
-                let parent = parent.get();
+                let parent = parent.parent();
                 focusable = parent;
                 if let Ok(menu) = self.menus.get_mut(parent) {
                     break menu;
@@ -851,7 +851,7 @@ pub(crate) fn set_first_focused(
         if let Some(to_focus) = queries.p0().pick_first_focused() {
             let breadcrumb = queries.p0().root_path(to_focus);
             queries.p1().update_focus(&[], &breadcrumb);
-            events.send(NavEvent::InitiallyFocused(to_focus));
+            events.write(NavEvent::InitiallyFocused(to_focus));
         }
     }
 }
@@ -917,7 +917,7 @@ pub(crate) fn listen_nav_requests<STGY: SystemParam>(
         if let NavEvent::FocusChanged { to, from } = &event {
             computed_focused = Some(queries.p1().update_focus(from, to));
         };
-        events.send(event);
+        events.write(event);
     }
 }
 
@@ -937,7 +937,7 @@ pub(crate) fn parent_menu(
     focusable: Entity,
     queries: &NavQueries,
 ) -> Option<(Entity, TreeMenu, MenuSetting)> {
-    let parent = queries.parents.get(focusable).ok()?.get();
+    let parent = queries.parents.get(focusable).ok()?.parent();
     match queries.menus.get(parent) {
         Ok((_, tree, setting)) => Some((parent, tree.clone(), *setting)),
         Err(_) => parent_menu(parent, queries),

@@ -70,7 +70,7 @@ fn setup(mut commands: Commands, mut input_mapping: ResMut<InputMapping>) {
             }
         });
 }
-fn spawn_button(position: Vec2, commands: &mut ChildBuilder) {
+fn spawn_button(position: Vec2, commands: &mut ChildSpawnerCommands) {
     commands.spawn((
         Button,
         Node {

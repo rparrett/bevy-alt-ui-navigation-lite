@@ -419,7 +419,6 @@ mod test {
     // A navigation strategy that does nothing, useful for testing.
     #[derive(SystemParam)]
     struct MockNavigationStrategy<'w, 's> {
-        #[system_param(ignore)]
         _f: PhantomData<fn() -> (&'w (), &'s ())>,
     }
     // Just to make the next `impl` block shorter, unused otherwise.

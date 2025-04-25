@@ -162,7 +162,7 @@ pub fn default_gamepad_input(
                 () if delta.y >= delta.x && delta.y > -delta.x => North,
                 () => West,
             };
-            nav_cmds.send(Move(direction));
+            nav_cmds.write(Move(direction));
             *ui_input_status = true;
         } else if delta.length_squared() <= input_mapping.joystick_ui_deadzone {
             *ui_input_status = false;
@@ -181,7 +181,7 @@ pub fn default_gamepad_input(
         };
         for (button_type, request) in command_mapping {
             if gamepad.just_pressed(button_type) {
-                nav_cmds.send(request);
+                nav_cmds.write(request);
             }
         }
     }
@@ -230,7 +230,7 @@ pub fn default_keyboard_input(
     };
     let mut send_command = |&(key, request)| {
         if keyboard.just_pressed(key) {
-            nav_cmds.send(request);
+            nav_cmds.write(request);
         }
     };
     if input_mapping.keyboard_navigation {
@@ -364,7 +364,7 @@ pub fn generic_default_mouse_input<T: ScreenSize + Component>(
     mut last_pos: Local<Vec2>,
 ) {
     let no_focusable_msg = "Entity with `Focused` component must also have a `Focusable` component";
-    let Ok(window) = primary_window.get_single() else {
+    let Ok(window) = primary_window.single() else {
         return;
     };
     let cursor_pos = match cursor_pos(window) {
@@ -377,7 +377,7 @@ pub fn generic_default_mouse_input<T: ScreenSize + Component>(
     };
     let released = mouse.just_released(input_mapping.mouse_action);
     let pressed = mouse.pressed(input_mapping.mouse_action);
-    let focused = focused.get_single();
+    let focused = focused.single();
 
     // Return early if cursor didn't move since last call
     let camera_moved = focusables.boundaries.map_or(false, |b| b.is_changed());
@@ -413,10 +413,10 @@ pub fn generic_default_mouse_input<T: ScreenSize + Component>(
             Some(c) => c,
             None => return,
         };
-        nav_cmds.send(NavRequest::FocusOn(to_target));
+        nav_cmds.write(NavRequest::FocusOn(to_target));
     }
     if released && (set_focused || hovering) {
-        nav_cmds.send(NavRequest::Action);
+        nav_cmds.write(NavRequest::Action);
     }
 }
 
