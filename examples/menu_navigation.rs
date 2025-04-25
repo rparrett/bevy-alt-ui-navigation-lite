@@ -103,7 +103,7 @@ fn handle_nav_events(
                 from,
                 request: Action,
             } if game.from.contains(from.first()) => {
-                requests.send(NavRequest::FocusOn(game.to));
+                requests.write(NavRequest::FocusOn(game.to));
             }
             _ => {}
         }
