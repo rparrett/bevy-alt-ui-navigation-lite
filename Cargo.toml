@@ -22,6 +22,7 @@ bevy = { version = "0.16", default-features = false, features = [
     "bevy_ui",
     "bevy_render",
     "bevy_window",
+    "bevy_log",
 ] }
 non-empty-vec = { version = "0.2.2", default-features = false }
 
