@@ -125,7 +125,7 @@ impl<T: 'static + Sync + Send + Component + Clone> Plugin for NavMarkerPropagati
 /// # use std::marker::PhantomData;
 /// # use bevy::ecs::system::SystemParam;
 /// # #[derive(SystemParam)] struct MoveCursor3d<'w, 's> {
-/// #   #[system_param(ignore)] _foo: PhantomData<(&'w (), &'s ())>
+/// #   _foo: PhantomData<(&'w (), &'s ())>
 /// # }
 /// # impl<'w, 's> MenuNavigationStrategy for MoveCursor3d<'w, 's> {
 /// #   fn resolve_2d<'a>(
