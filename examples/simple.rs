@@ -37,7 +37,7 @@ fn button_system(
 
 fn print_nav_events(mut events: EventReader<NavEvent>) {
     for event in events.read() {
-        println!("{:?}", event);
+        info!("{:?}", event);
     }
 }
 

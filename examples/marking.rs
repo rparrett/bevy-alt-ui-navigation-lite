@@ -65,14 +65,14 @@ fn print_menus(
     // Notice in `setup` how we DID NOT add any `*ColumnMenus` components to
     // any entity? It is the `NavMarkerPropagationPlugin` that added the
     // components to the focusables within the `MarkingMenu`.
-    if let Ok(menu) = left_menus.get_single() {
-        println!("Entered Red column menu: {menu:?}");
+    if let Ok(menu) = left_menus.single() {
+        info!("Entered Red column menu: {menu:?}");
     }
-    if let Ok(menu) = center_menus.get_single() {
-        println!("Entered Green column menu: {menu:?}");
+    if let Ok(menu) = center_menus.single() {
+        info!("Entered Green column menu: {menu:?}");
     }
-    if let Ok(menu) = right_menus.get_single() {
-        println!("Entered Blue column menu: {menu:?}");
+    if let Ok(menu) = right_menus.single() {
+        info!("Entered Blue column menu: {menu:?}");
     }
 }
 

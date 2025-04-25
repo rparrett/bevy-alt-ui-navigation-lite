@@ -96,7 +96,7 @@ fn handle_nav_events(
     use NavRequest::Action;
     for event in events.read() {
         if let NavEvent::FocusChanged { from, to } = &event {
-            println!("----------\nfrom: {:?}\n  to: {:?}", from, to);
+            info!("----------\nfrom: {:?}\n  to: {:?}", from, to);
         }
         match event {
             NavEvent::NoChanges {
