@@ -1,3 +1,7 @@
+# 0.4.0
+
+* Upgrade to Bevy 0.16 by @rparrett in <https://github.com/rparrett/bevy-alt-ui-navigation-lite/pull/7>
+
 # 0.3.1
 
 * Fix logical coords being used for cursor position
