@@ -834,7 +834,7 @@ pub(crate) fn insert_tree_menus(
             debug!("Associated {entity:?} with a parent focusable.");
         }
     }
-    commands.insert_or_spawn_batch(inserts);
+    commands.insert_batch(inserts);
 }
 
 /// System to set the first [`Focusable`] to [`FocusState::Focused`]
