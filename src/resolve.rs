@@ -951,7 +951,7 @@ impl ChildQueries<'_, '_> {
         let is_focusable = |e: &&_| {
             self.is_focusable
                 .get(**e)
-                .map_or(false, |f| f.state != Blocked)
+                .is_ok_and(|f| f.state != Blocked)
         };
         match self.children.get(menu) {
             Ok(direct_children) => {

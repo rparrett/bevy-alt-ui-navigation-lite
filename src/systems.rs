@@ -380,7 +380,7 @@ pub fn generic_default_mouse_input<T: ScreenSize + Component>(
     let focused = focused.single();
 
     // Return early if cursor didn't move since last call
-    let camera_moved = focusables.boundaries.map_or(false, |b| b.is_changed());
+    let camera_moved = focusables.boundaries.is_some_and(|b| b.is_changed());
     let mouse_moved = *last_pos != cursor_pos;
     if (!released && !pressed) && !mouse_moved && !camera_moved {
         return;
@@ -397,7 +397,7 @@ pub fn generic_default_mouse_input<T: ScreenSize + Component>(
     // If the currently hovered node is the focused one, there is no need to
     // find which node we are hovering and to switch focus to it (since we are
     // already focused on it)
-    let hovering = focused.map_or(false, hovering_focused);
+    let hovering = focused.is_ok_and(hovering_focused);
     let set_focused = (pressed || released) && !hovering;
     if set_focused {
         // We only run this code when we really need it because we iterate over all
