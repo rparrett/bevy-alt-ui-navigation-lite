@@ -22,7 +22,7 @@ pub(crate) fn mark_new_menus<T: Component + Clone>(
         let menu_children = children.focusables_of(new_menu);
         to_insert.extend(menu_children.into_iter().zip(repeat_marker));
     }
-    cmds.insert_or_spawn_batch(to_insert);
+    cmds.insert_batch(to_insert);
 }
 pub(crate) fn mark_new_focusables<T: Component + Clone>(
     mut cmds: Commands,
@@ -42,5 +42,5 @@ pub(crate) fn mark_new_focusables<T: Component + Clone>(
         };
         to_insert.push((new_focusable, (marker,)));
     }
-    cmds.insert_or_spawn_batch(to_insert);
+    cmds.insert_batch(to_insert);
 }

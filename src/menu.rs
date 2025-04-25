@@ -2,8 +2,7 @@
 
 use std::borrow::Cow;
 
-use bevy::core::Name;
-use bevy::ecs::{entity::Entity, prelude::Component};
+use bevy::ecs::{entity::Entity, name::Name, prelude::Component};
 #[cfg(feature = "bevy_reflect")]
 use bevy::{ecs::reflect::ReflectComponent, reflect::Reflect};
 

@@ -29,13 +29,13 @@ fn main() {
 
 fn print_nav_events(mut events: EventReader<NavEvent>) {
     for event in events.read() {
-        println!("{:?}", event);
+        info!("{:?}", event);
     }
 }
 
 fn extra_lock_key(mut requests: EventWriter<NavRequest>, input: Res<ButtonInput<KeyCode>>) {
     if input.just_pressed(KeyCode::KeyL) {
-        requests.send(NavRequest::Lock);
+        requests.write(NavRequest::Lock);
     }
 }
 

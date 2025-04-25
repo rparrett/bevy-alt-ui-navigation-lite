@@ -17,7 +17,6 @@
 //! [`TreeMenu`]: crate::resolve::TreeMenu
 use std::mem;
 
-use bevy::core::Name;
 use bevy::ecs::prelude::*;
 use bevy::log::{debug, warn};
 use bevy::time::Time;
