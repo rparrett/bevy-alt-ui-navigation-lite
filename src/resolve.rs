@@ -948,11 +948,7 @@ impl ChildQueries<'_, '_> {
     /// All sibling [`Focusable`]s within a single [`TreeMenu`].
     pub(crate) fn focusables_of(&self, menu: Entity) -> Vec<Entity> {
         use FocusState::Blocked;
-        let is_focusable = |e: &&_| {
-            self.is_focusable
-                .get(**e)
-                .is_ok_and(|f| f.state != Blocked)
-        };
+        let is_focusable = |e: &&_| self.is_focusable.get(**e).is_ok_and(|f| f.state != Blocked);
         match self.children.get(menu) {
             Ok(direct_children) => {
                 let focusables = direct_children.iter().filter(is_focusable).cloned();
