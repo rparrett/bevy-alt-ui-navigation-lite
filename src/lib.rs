@@ -13,7 +13,6 @@
 [module-event_helpers]: events::NavMessageReaderExt
 [module-marking]: mark
 [module-systems]: systems
-[Name]: bevy::core::Name
 [`NavMessage::FocusChanged`]: events::NavMessage::FocusChanged
 [`NavMessage`]: events::NavMessage
 [`NavMessage::InitiallyFocused`]: events::NavMessage::InitiallyFocused
