@@ -237,7 +237,7 @@ impl PluginGroup for DefaultNavigationPlugins {
 #[cfg(test)]
 mod test {
     use crate::prelude::*;
-    use bevy::{ecs::event::Event, prelude::*};
+    use bevy::prelude::*;
 
     use super::*;
     // Why things might fail?
@@ -481,12 +481,12 @@ mod test {
                 .unwrap();
             self.app
                 .world_mut()
-                .send_event(NavRequest::FocusOn(requested));
+                .write_message(NavRequest::FocusOn(requested));
             self.app.update();
             receive_events(self.app.world_mut())
         }
         fn run_request(&mut self, request: NavRequest) -> Vec<NavMessage> {
-            self.app.world_mut().send_event(request);
+            self.app.world_mut().write_message(request);
             self.app.update();
             receive_events(self.app.world_mut())
         }

@@ -523,7 +523,7 @@ fn spawn_button(commands: &mut EntityCommands, color: Color, at: Vec2, text: Str
                     font_size: FONT_SIZE,
                     ..default()
                 },
-                TextLayout::new_with_justify(JustifyText::Center),
+                TextLayout::new_with_justify(Justify::Center),
                 item_position(Vec2::ZERO),
             ));
         });
@@ -570,7 +570,7 @@ fn spawn_weapon_upgrade_menu(
                     font_size: FONT_SIZE,
                     ..default()
                 },
-                TextLayout::new_with_justify(JustifyText::Center),
+                TextLayout::new_with_justify(Justify::Center),
                 item_position(Vec2::Y * (MENU_HEIGHT / 2.0 - MENU_PADDING - FONT_SIZE / 2.0)),
             ));
 

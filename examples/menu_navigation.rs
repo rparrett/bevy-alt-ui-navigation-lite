@@ -50,7 +50,7 @@ impl Gameui {
     pub fn new() -> Self {
         Self {
             from: Vec::new(),
-            to: Entity::from_raw(1),
+            to: Entity::from_raw_u32(1).unwrap(),
         }
     }
 }
