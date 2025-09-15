@@ -68,7 +68,7 @@ use crate::{
 /// System parameter used to resolve movement and cycling focus updates.
 ///
 /// This is useful if you don't want to depend
-/// on bevy's `GlobalTransform` for your UI,
+/// on bevy's `UiGlobalTransform` for your UI,
 /// or want to implement your own navigation algorithm.
 /// For example, if you want your ui to be 3d elements in the world.
 pub trait MenuNavigationStrategy {
@@ -126,7 +126,7 @@ pub(crate) struct ChildQueries<'w, 's> {
 
 /// System parameter for the default cursor navigation system.
 ///
-/// It uses the bevy [`GlobalTransform`] to compute relative positions
+/// It uses the bevy [`UiGlobalTransform`] to compute relative positions
 /// and change focus to the correct entity.
 /// It uses the [`ScreenBoundaries`] resource to compute screen boundaries
 /// and move the cursor accordingly when it reaches a screen border
