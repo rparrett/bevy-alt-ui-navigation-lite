@@ -127,7 +127,7 @@ macro_rules! mapping {
 /// when integrating in the game) in this case, you should write your own
 /// system that sends [`NavRequest`] events
 pub fn default_gamepad_input(
-    mut nav_cmds: EventWriter<NavRequest>,
+    mut nav_cmds: MessageWriter<NavRequest>,
     has_focused: Query<(), With<Focused>>,
     input_mapping: Res<InputMapping>,
     gamepads: Query<(Entity, &Gamepad)>,
@@ -200,7 +200,7 @@ pub fn default_keyboard_input(
     has_focused: Query<(), With<Focused>>,
     keyboard: Res<ButtonInput<KeyCode>>,
     input_mapping: Res<InputMapping>,
-    mut nav_cmds: EventWriter<NavRequest>,
+    mut nav_cmds: MessageWriter<NavRequest>,
 ) {
     use Direction::*;
     use NavRequest::*;
@@ -327,7 +327,7 @@ pub fn default_mouse_input(
     mouse: Res<ButtonInput<MouseButton>>,
     focusables: NodePosQuery<ComputedNode>,
     focused: Query<Entity, With<Focused>>,
-    nav_cmds: EventWriter<NavRequest>,
+    nav_cmds: MessageWriter<NavRequest>,
     last_pos: Local<Vec2>,
 ) {
     generic_default_mouse_input(
@@ -360,7 +360,7 @@ pub fn generic_default_mouse_input<T: ScreenSize + Component>(
     mouse: Res<ButtonInput<MouseButton>>,
     focusables: NodePosQuery<T>,
     focused: Query<Entity, With<Focused>>,
-    mut nav_cmds: EventWriter<NavRequest>,
+    mut nav_cmds: MessageWriter<NavRequest>,
     mut last_pos: Local<Vec2>,
 ) {
     let no_focusable_msg = "Entity with `Focused` component must also have a `Focusable` component";

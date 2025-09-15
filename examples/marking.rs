@@ -34,7 +34,7 @@ column_type!(enum RightColMenu, 6);
 /// 1. How to register multiple marking types
 /// 2. How to add menu markers that automatically add components to focusables
 ///    within the menu
-/// 3. How to use the marker components to tell menus involved in `NavEvent`
+/// 3. How to use the marker components to tell menus involved in `NavMessage`
 ///    events.
 ///
 /// It constructs 9 menus of 3 buttons, you can navigate between them with the

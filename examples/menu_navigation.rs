@@ -2,7 +2,7 @@ use bevy::{color::palettes::css::*, prelude::*};
 
 use bevy_alt_ui_navigation_lite::{
     prelude::{
-        DefaultNavigationPlugins, FocusState, Focusable, MenuBuilder, MenuSetting, NavEvent,
+        DefaultNavigationPlugins, FocusState, Focusable, MenuBuilder, MenuSetting, NavMessage,
         NavRequest, NavRequestSystem,
     },
     systems::InputMapping,
@@ -89,17 +89,17 @@ fn button_system(
 }
 
 fn handle_nav_events(
-    mut events: EventReader<NavEvent>,
-    mut requests: EventWriter<NavRequest>,
+    mut events: MessageReader<NavMessage>,
+    mut requests: MessageWriter<NavRequest>,
     game: Res<Gameui>,
 ) {
     use NavRequest::Action;
     for event in events.read() {
-        if let NavEvent::FocusChanged { from, to } = &event {
+        if let NavMessage::FocusChanged { from, to } = &event {
             info!("----------\nfrom: {:?}\n  to: {:?}", from, to);
         }
         match event {
-            NavEvent::NoChanges {
+            NavMessage::NoChanges {
                 from,
                 request: Action,
             } if game.from.contains(from.first()) => {

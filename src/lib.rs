@@ -13,13 +13,13 @@
 [`generic_default_mouse_input`]: systems::generic_default_mouse_input
 [`InputMapping`]: systems::InputMapping
 [`InputMapping::keyboard_navigation`]: systems::InputMapping::keyboard_navigation
-[module-event_helpers]: events::NavEventReaderExt
+[module-event_helpers]: events::NavMessageReaderExt
 [module-marking]: mark
 [module-systems]: systems
 [Name]: bevy::core::Name
-[`NavEvent::FocusChanged`]: events::NavEvent::FocusChanged
-[`NavEvent`]: events::NavEvent
-[`NavEvent::InitiallyFocused`]: events::NavEvent::InitiallyFocused
+[`NavMessage::FocusChanged`]: events::NavMessage::FocusChanged
+[`NavMessage`]: events::NavMessage
+[`NavMessage::InitiallyFocused`]: events::NavMessage::InitiallyFocused
 [`MenuSetting`]: menu::MenuSetting
 [`NavMenu`]: menu::MenuSetting
 [`MenuBuilder`]: menu::MenuBuilder
@@ -56,7 +56,7 @@ use resolve::UiProjectionQuery;
 
 /// Default imports for `bevy_alt_ui_navigation_lite`.
 pub mod prelude {
-    pub use crate::events::{NavEvent, NavEventReaderExt, NavRequest};
+    pub use crate::events::{NavMessage, NavMessageReaderExt, NavRequest};
     pub use crate::menu::{MenuBuilder, MenuSetting};
     pub use crate::resolve::{
         FocusAction, FocusState, Focusable, Focused, MenuNavigationStrategy, NavLock,
@@ -105,7 +105,7 @@ impl<T: 'static + Sync + Send + Component + Clone> Plugin for NavMarkerPropagati
 }
 
 /// The label of the system in which the [`NavRequest`] events are handled, the
-/// focus state of the [`Focusable`]s is updated and the [`NavEvent`] events
+/// focus state of the [`Focusable`]s is updated and the [`NavMessage`] events
 /// are sent.
 ///
 /// Systems updating visuals of UI elements should run _after_ the `NavRequestSystem`,
@@ -149,7 +149,7 @@ impl<T: 'static + Sync + Send + Component + Clone> Plugin for NavMarkerPropagati
 /// ```
 ///
 /// [`NavRequest`]: prelude::NavRequest
-/// [`NavEvent`]: prelude::NavEvent
+/// [`NavMessage`]: prelude::NavMessage
 /// [`Focusable`]: prelude::Focusable
 #[derive(Clone, Debug, Hash, PartialEq, Eq, SystemSet)]
 pub struct NavRequestSystem;
@@ -200,8 +200,8 @@ where
             .register_type::<resolve::TreeMenu>()
             .register_type::<systems::InputMapping>();
 
-        app.add_event::<events::NavRequest>()
-            .add_event::<events::NavEvent>()
+        app.add_message::<events::NavRequest>()
+            .add_message::<events::NavMessage>()
             .insert_resource(resolve::NavLock::new())
             .add_systems(
                 Update,
@@ -401,7 +401,7 @@ mod test {
     /// There is nothing beside that that would prevent converting this into a function.
     macro_rules! assert_expected_focus_change {
         ($app:expr, $events:expr, $expected_from:expr, $expected_to:expr $(,)?) => {
-            if let [NavEvent::FocusChanged { to, from }] = $events {
+            if let [NavMessage::FocusChanged { to, from }] = $events {
                 let actual_from = $app.name_list(&*from);
                 assert_eq!(&*actual_from, $expected_from);
 
@@ -409,7 +409,7 @@ mod test {
                 assert_eq!(&*actual_to, $expected_to);
             } else {
                 panic!(
-                    "Expected a signle FocusChanged NavEvent, got: {:#?}",
+                    "Expected a single FocusChanged NavMessage, got: {:#?}",
                     $events
                 );
             }
@@ -428,9 +428,9 @@ mod test {
             None
         }
     }
-    fn receive_events<E: Event + Clone>(world: &World) -> Vec<E> {
-        let events = world.resource::<Events<E>>();
-        events.iter_current_update_events().cloned().collect()
+    fn receive_events<E: Message + Clone>(world: &World) -> Vec<E> {
+        let events = world.resource::<Messages<E>>();
+        events.iter_current_update_messages().cloned().collect()
     }
 
     /// Wrapper around `App` to make it easier to test the navigation systems.
@@ -445,7 +445,7 @@ mod test {
                 .query_filtered::<&Name, With<Focused>>();
             query.iter(self.app.world()).next().unwrap()
         }
-        fn kill_named(&mut self, to_kill: &str) -> Vec<NavEvent> {
+        fn kill_named(&mut self, to_kill: &str) -> Vec<NavMessage> {
             let mut query = self.app.world_mut().query::<(Entity, &Name)>();
             let requested = query
                 .iter(self.app.world())
@@ -473,7 +473,7 @@ mod test {
 
             Self { app }
         }
-        fn run_focus_on(&mut self, entity_name: &str) -> Vec<NavEvent> {
+        fn run_focus_on(&mut self, entity_name: &str) -> Vec<NavMessage> {
             let mut query = self.app.world_mut().query::<(Entity, &Name)>();
             let requested = query
                 .iter(self.app.world())
@@ -485,7 +485,7 @@ mod test {
             self.app.update();
             receive_events(self.app.world_mut())
         }
-        fn run_request(&mut self, request: NavRequest) -> Vec<NavEvent> {
+        fn run_request(&mut self, request: NavRequest) -> Vec<NavMessage> {
             self.app.world_mut().send_event(request);
             self.app.update();
             receive_events(self.app.world_mut())
