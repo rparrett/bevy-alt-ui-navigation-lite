@@ -44,6 +44,7 @@ use bevy::log::{debug, warn};
 use bevy::prelude::{Changed, FromWorld};
 #[cfg(feature = "bevy_reflect")]
 use bevy::reflect::Reflect;
+use bevy::ui::UiGlobalTransform;
 use bevy::{
     ecs::{
         prelude::{
@@ -54,11 +55,7 @@ use bevy::{
     },
     math::Vec2,
 };
-use bevy::{
-    math::FloatOrd,
-    math::Vec3Swizzles,
-    prelude::{GlobalTransform, Res},
-};
+use bevy::{math::FloatOrd, prelude::Res};
 
 use non_empty_vec::NonEmpty;
 
@@ -137,7 +134,7 @@ pub(crate) struct ChildQueries<'w, 's> {
 #[derive(SystemParam)]
 pub struct UiProjectionQuery<'w, 's> {
     boundaries: Option<Res<'w, ScreenBoundaries>>,
-    transforms: Query<'w, 's, &'static GlobalTransform>,
+    transforms: Query<'w, 's, &'static UiGlobalTransform>,
 }
 
 /// Collection of queries to manage the navigation tree.
@@ -630,9 +627,8 @@ impl MenuNavigationStrategy for UiProjectionQuery<'_, '_> {
         let pos_of = |entity: Entity| {
             self.transforms
                 .get(entity)
-                .expect("Focusable entities must have a GlobalTransform component")
-                .translation()
-                .xy()
+                .expect("Focusable entities must have a UiTransform component")
+                .translation
         };
         let focused_pos = pos_of(focused);
         let closest = siblings
