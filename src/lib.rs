@@ -1,13 +1,10 @@
 /*!
-[`ButtonBundle`]: bevy::prelude::ButtonBundle
 [Changed]: bevy::prelude::Changed
 [doc-root]: ./index.html
 [`Entity`]: bevy::prelude::Entity
 [entity-id]: bevy::ecs::system::EntityCommands::id
-[`FocusableButtonBundle`]: components::FocusableButtonBundle
 [`Focusable::cancel`]: resolve::Focusable::cancel
 [`Focusable::block`]: resolve::Focusable::block
-[`Focusable::dormant`]: resolve::Focusable::dormant
 [`Focusable`]: resolve::Focusable
 [`Focusable::lock`]: resolve::Focusable::lock
 [`generic_default_mouse_input`]: systems::generic_default_mouse_input
