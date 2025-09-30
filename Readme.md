@@ -9,7 +9,9 @@ A generic UI navigation algorithm for the
 
 Based on [`bevy-ui-navigation`](https://github.com/nicopap) but stripped down to remove support for `cuicui_layout` and `bevy_mod_picking`.
 
-Offered with limited support -- I plan to keep this updated with the latest Bevy release and fix bugs, but I am not interested in adding new features.
+Maintenance of this project is becoming burdensome for me and I am considering archiving it soon.
+
+Many simpler use-cases can now be handled by Bevy's [directional navigation](https://bevy.org/examples/ui-user-interface/directional-navigation/). Consider using it instead, if possible.
 
 ```toml
 [dependencies]
