@@ -163,7 +163,7 @@ pub(crate) struct NavMarker<T>(pub(crate) T);
 ///    hierarchy.
 /// 2. There must not be a menu loop. Ie: a way to go from menu A to menu B and
 ///    then from menu B to menu A while never going back.
-/// 3. Focusables in 2d menus must have a `GlobalTransform`.
+/// 3. Focusables in 2d menus must have a `UiGlobalTransform`.
 ///
 /// # Panics
 ///

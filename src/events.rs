@@ -2,8 +2,8 @@
 //!
 //! The navigation system works through bevy's `Events` system.
 //! It is a system with one input and two outputs:
-//! * Input `EventWriter<NavRequest>`, tells the navigation system what to do.
-//!   Your app should have a system that writes to a `EventWriter<NavRequest>`
+//! * Input `MessageWriter<NavRequest>`, tells the navigation system what to do.
+//!   Your app should have a system that writes to a `MessageWriter<NavRequest>`
 //!   based on inputs or internal game state.
 //!   Bevy provides default systems in `bevy_ui`.
 //!   But you can add your own requests on top of the ones the default systems send.
@@ -12,26 +12,25 @@
 //!   The navigation system updates the focusables component
 //!   according to the focus state of the navigation system.
 //!   See `examples/cursor_navigation` directory for usage clues.
-//! * Output `EventReader<NavEvent>`,
+//! * Output `MessageReader<NavMessage>`,
 //!   contains specific information about what the navigation system is doing.
 //!
 //! [`Focusable`]: crate::resolve::Focusable
 use bevy::{
     ecs::{
         entity::Entity,
-        event::EventReader,
+        message::{Message, MessageReader},
         query::{QueryData, QueryFilter, ReadOnlyQueryData},
         system::Query,
     },
     math::Vec2,
-    prelude::Event,
 };
 use non_empty_vec::NonEmpty;
 
 use crate::resolve::LockReason;
 
 /// Requests to send to the navigation system to update focus.
-#[derive(Debug, PartialEq, Clone, Copy, Event)]
+#[derive(Debug, PartialEq, Clone, Copy, Message)]
 pub enum NavRequest {
     /// Move in in provided direction according to the plugin's [navigation strategy].
     ///
@@ -70,13 +69,13 @@ pub enum NavRequest {
 
     /// Locks the navigation system.
     ///
-    /// A [`NavEvent::Locked`] will be emitted as a response if the
+    /// A [`NavMessage::Locked`] will be emitted as a response if the
     /// navigation system was not already locked.
     Lock,
 
     /// Unlocks the navigation system.
     ///
-    /// A [`NavEvent::Unlocked`] will be emitted as a response if the
+    /// A [`NavMessage::Unlocked`] will be emitted as a response if the
     /// navigation system was indeed locked.
     Unlock,
 }
@@ -121,11 +120,11 @@ impl Direction {
 
 /// Events emitted by the navigation system.
 ///
-/// Useful if you want to react to [`NavEvent::NoChanges`] event, for example
+/// Useful if you want to react to [`NavMessage::NoChanges`] event, for example
 /// when a "start game" button is focused and the [`NavRequest::Action`] is
 /// pressed.
-#[derive(Debug, Clone, Event)]
-pub enum NavEvent {
+#[derive(Debug, Clone, Message)]
+pub enum NavMessage {
     /// Tells the app which element is the first one to be focused.
     ///
     /// This will be sent whenever the number of focused elements go from 0 to 1.
@@ -186,54 +185,54 @@ pub enum NavEvent {
     /// [lock]: crate::resolve::NavLock
     Unlocked(LockReason),
 }
-impl NavEvent {
+impl NavMessage {
     /// Create a `FocusChanged` with a single `to`
     ///
-    /// Usually the `NavEvent::FocusChanged.to` field has a unique value.
-    pub(crate) fn focus_changed(to: Entity, from: NonEmpty<Entity>) -> NavEvent {
-        NavEvent::FocusChanged {
+    /// Usually the `NavMessage::FocusChanged.to` field has a unique value.
+    pub(crate) fn focus_changed(to: Entity, from: NonEmpty<Entity>) -> NavMessage {
+        NavMessage::FocusChanged {
             from,
             to: NonEmpty::new(to),
         }
     }
 
-    /// Whether this event is a [`NavEvent::NoChanges`]
+    /// Whether this event is a [`NavMessage::NoChanges`]
     /// triggered by a [`NavRequest::Action`]
     /// if `entity` is the currently focused element.
     pub fn is_activated(&self, entity: Entity) -> bool {
-        matches!(self, NavEvent::NoChanges { from,  request: NavRequest::Action } if *from.first() == entity)
+        matches!(self, NavMessage::NoChanges { from,  request: NavRequest::Action } if *from.first() == entity)
     }
 }
 
-/// Extend [`EventReader<NavEvent>`] with methods
-/// to simplify working with [`NavEvent`]s.
+/// Extend [`MessageReader<NavMessage>`] with methods
+/// to simplify working with [`NavMessage`]s.
 ///
-/// See the [`NavEventReader`] documentation for details.
+/// See the [`NavMessageReader`] documentation for details.
 ///
-/// [`EventReader<NavEvent>`]: EventReader
-pub trait NavEventReaderExt<'w, 's> {
-    /// Create a [`NavEventReader`] from this event reader.
-    fn nav_iter(&mut self) -> NavEventReader<'w, 's, '_>;
+/// [`MessageReader<NavMessage>`]: MessageReader
+pub trait NavMessageReaderExt<'w, 's> {
+    /// Create a [`NavMessageReader`] from this event reader.
+    fn nav_iter(&mut self) -> NavMessageReader<'w, 's, '_>;
 }
-impl<'w, 's> NavEventReaderExt<'w, 's> for EventReader<'w, 's, NavEvent> {
-    fn nav_iter(&mut self) -> NavEventReader<'w, 's, '_> {
-        NavEventReader { event_reader: self }
+impl<'w, 's> NavMessageReaderExt<'w, 's> for MessageReader<'w, 's, NavMessage> {
+    fn nav_iter(&mut self) -> NavMessageReader<'w, 's, '_> {
+        NavMessageReader { event_reader: self }
     }
 }
 
-/// A wrapper for `EventReader<NavEvent>` to simplify dealing with [`NavEvent`]s.
-pub struct NavEventReader<'w, 's, 'a> {
-    event_reader: &'a mut EventReader<'w, 's, NavEvent>,
+/// A wrapper for `MessageReader<NavMessage>` to simplify dealing with [`NavMessage`]s.
+pub struct NavMessageReader<'w, 's, 'a> {
+    event_reader: &'a mut MessageReader<'w, 's, NavMessage>,
 }
 
-impl NavEventReader<'_, '_, '_> {
-    /// Iterate over [`NavEvent::NoChanges`] focused entity
+impl NavMessageReader<'_, '_, '_> {
+    /// Iterate over [`NavMessage::NoChanges`] focused entity
     /// triggered by `request` type requests.
     pub fn with_request(&mut self, request: NavRequest) -> impl Iterator<Item = Entity> + '_ {
         self.event_reader
             .read()
             .filter_map(move |nav_event| match nav_event {
-                NavEvent::NoChanges {
+                NavMessage::NoChanges {
                     from,
                     request: event_request,
                 } if *event_request == request => Some(*from.first()),
@@ -250,10 +249,10 @@ impl NavEventReader<'_, '_, '_> {
         self.with_request(NavRequest::Action)
     }
 
-    /// Iterate over [`NavEvent`]s, associating them
+    /// Iterate over [`NavMessage`]s, associating them
     /// with the "relevant" entity of the event.
-    pub fn types(&mut self) -> impl Iterator<Item = (&NavEvent, Entity)> + '_ {
-        use NavEvent::{FocusChanged, InitiallyFocused, Locked, NoChanges, Unlocked};
+    pub fn types(&mut self) -> impl Iterator<Item = (&NavMessage, Entity)> + '_ {
+        use NavMessage::{FocusChanged, InitiallyFocused, Locked, NoChanges, Unlocked};
         self.event_reader.read().filter_map(|event| {
             let entity = match event {
                 NoChanges { from, .. } => Some(*from.first()),
@@ -270,10 +269,10 @@ impl NavEventReader<'_, '_, '_> {
     /// Iterate over query items of _activated_ focusables.
     ///
     /// See [`Self::activated`] for meaning of _"activated"_.
-    pub fn activated_in_query<'b, 'c: 'b, Q: ReadOnlyQueryData, F: QueryFilter>(
+    pub fn activated_in_query<'b, 'c: 'b, 's, Q: ReadOnlyQueryData, F: QueryFilter>(
         &'b mut self,
-        query: &'c Query<Q, F>,
-    ) -> impl Iterator<Item = Q::Item<'c>> + 'b {
+        query: &'c Query<'_, 's, Q, F>,
+    ) -> impl Iterator<Item = Q::Item<'c, 's>> + 'b {
         query.iter_many(self.activated())
     }
 
@@ -281,10 +280,10 @@ impl NavEventReader<'_, '_, '_> {
     ///
     /// Unlike [`Self::activated_in_query`] this works with mutable queries.
     /// see [`Self::activated`] for meaning of _"activated"_.
-    pub fn activated_in_query_foreach_mut<Q: QueryData, F: QueryFilter>(
+    pub fn activated_in_query_foreach_mut<'s, Q: QueryData, F: QueryFilter>(
         &mut self,
-        query: &mut Query<Q, F>,
-        mut for_each: impl FnMut(Q::Item<'_>),
+        query: &mut Query<'_, 's, Q, F>,
+        mut for_each: impl for<'q> FnMut(Q::Item<'q, 's>),
     ) {
         let mut iter = query.iter_many_mut(self.activated());
         while let Some(item) = iter.fetch_next() {

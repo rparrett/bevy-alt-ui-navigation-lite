@@ -55,7 +55,7 @@ impl Default for MyDirection {
 
 fn non_stop_move(
     input: Res<ButtonInput<KeyCode>>,
-    mut requests: EventWriter<NavRequest>,
+    mut requests: MessageWriter<NavRequest>,
     mut enabled: Local<bool>,
     time: Res<Time>,
     mut last_direction: Local<MyDirection>,

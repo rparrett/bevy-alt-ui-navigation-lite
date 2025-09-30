@@ -5,7 +5,7 @@
 //! This module defines two systems:
 //! 1. [`listen_nav_requests`]: the system gathering [`NavRequest`] and running
 //!    the [`resolve`] algorithm on them, updating the [`Focusable`] states and
-//!    sending [`NavEvent`] as result.
+//!    sending [`NavMessage`] as result.
 //! 2. [`insert_tree_menus`]: system responsible to convert [`MenuBuilder`] defined
 //!    in [`crate::menu`] into [`TreeMenu`], which is the component used by
 //!    the resolution algorithm.
@@ -44,32 +44,31 @@ use bevy::log::{debug, warn};
 use bevy::prelude::{Changed, FromWorld};
 #[cfg(feature = "bevy_reflect")]
 use bevy::reflect::Reflect;
+use bevy::ui::UiGlobalTransform;
 use bevy::{
     ecs::{
-        event::{EventReader, EventWriter},
-        prelude::{Commands, Component, Entity, ParamSet, Query, ResMut, Resource, With, Without},
+        prelude::{
+            Commands, Component, Entity, MessageReader, MessageWriter, ParamSet, Query, ResMut,
+            Resource, With, Without,
+        },
         system::{StaticSystemParam, SystemParam, SystemParamItem},
     },
     math::Vec2,
 };
-use bevy::{
-    math::FloatOrd,
-    math::Vec3Swizzles,
-    prelude::{GlobalTransform, Res},
-};
+use bevy::{math::FloatOrd, prelude::Res};
 
 use non_empty_vec::NonEmpty;
 
 use crate::{
     commands::set_focus_state,
-    events::{self, NavEvent, NavRequest},
+    events::{self, NavMessage, NavRequest},
     menu::{MenuBuilder, MenuSetting},
 };
 
 /// System parameter used to resolve movement and cycling focus updates.
 ///
 /// This is useful if you don't want to depend
-/// on bevy's `GlobalTransform` for your UI,
+/// on bevy's `UiGlobalTransform` for your UI,
 /// or want to implement your own navigation algorithm.
 /// For example, if you want your ui to be 3d elements in the world.
 pub trait MenuNavigationStrategy {
@@ -127,7 +126,7 @@ pub(crate) struct ChildQueries<'w, 's> {
 
 /// System parameter for the default cursor navigation system.
 ///
-/// It uses the bevy [`GlobalTransform`] to compute relative positions
+/// It uses the bevy [`UiGlobalTransform`] to compute relative positions
 /// and change focus to the correct entity.
 /// It uses the [`ScreenBoundaries`] resource to compute screen boundaries
 /// and move the cursor accordingly when it reaches a screen border
@@ -135,7 +134,7 @@ pub(crate) struct ChildQueries<'w, 's> {
 #[derive(SystemParam)]
 pub struct UiProjectionQuery<'w, 's> {
     boundaries: Option<Res<'w, ScreenBoundaries>>,
-    transforms: Query<'w, 's, &'static GlobalTransform>,
+    transforms: Query<'w, 's, &'static UiGlobalTransform>,
 }
 
 /// Collection of queries to manage the navigation tree.
@@ -441,7 +440,7 @@ pub enum FocusAction {
     /// while this [`Focusable`] is focused,
     /// the navigation system will freeze
     /// until [`NavRequest::Unlock`] is received,
-    /// sending a [`NavEvent::Unlocked`].
+    /// sending a [`NavMessage::Unlocked`].
     ///
     /// This is useful to implement widgets with complex controls
     /// you don't want to accidentally unfocus,
@@ -628,9 +627,8 @@ impl MenuNavigationStrategy for UiProjectionQuery<'_, '_> {
         let pos_of = |entity: Entity| {
             self.transforms
                 .get(entity)
-                .expect("Focusable entities must have a GlobalTransform component")
-                .translation()
-                .xy()
+                .expect("Focusable entities must have a UiTransform component")
+                .translation
         };
         let focused_pos = pos_of(focused);
         let closest = siblings
@@ -691,7 +689,7 @@ fn resolve<STGY: MenuNavigationStrategy>(
     lock: &mut ResMut<NavLock>,
     from: Vec<Entity>,
     strategy: &STGY,
-) -> NavEvent {
+) -> NavMessage {
     use FocusState::Blocked;
     use NavRequest::*;
 
@@ -712,22 +710,22 @@ fn resolve<STGY: MenuNavigationStrategy>(
         ($to_match:expr) => {
             match $to_match {
                 Some(x) => x,
-                None => return NavEvent::NoChanges { from, request },
+                None => return NavMessage::NoChanges { from, request },
             }
         };
     }
     match request {
         Lock => {
             if lock.is_locked() {
-                return NavEvent::NoChanges { from, request };
+                return NavMessage::NoChanges { from, request };
             }
             let reason = LockReason::NavRequest;
             lock.lock_reason = Some(reason);
-            NavEvent::Locked(reason)
+            NavMessage::Locked(reason)
         }
         Move(direction) => {
             let (parent, cycles) = match queries.parent_menu(focused) {
-                Some(val) if !val.2.is_2d() => return NavEvent::NoChanges { from, request },
+                Some(val) if !val.2.is_2d() => return NavMessage::NoChanges { from, request },
                 Some(val) => (Some(val.0), !val.2.bound()),
                 None => (None, true),
             };
@@ -737,13 +735,13 @@ fn resolve<STGY: MenuNavigationStrategy>(
                 None => queries.focusables.iter().filter_map(unblocked).collect(),
             };
             let to = strategy.resolve_2d(focused, direction, cycles, &siblings);
-            NavEvent::focus_changed(*or_none!(to), from)
+            NavMessage::focus_changed(*or_none!(to), from)
         }
         Cancel => {
             let to = or_none!(queries.parent_menu(focused));
             let to = or_none!(to.1.focus_parent);
             from.push(to);
-            NavEvent::focus_changed(to, from)
+            NavMessage::focus_changed(to, from)
         }
         Action => {
             match queries.focusables.get(focused).map(|e| e.1.action) {
@@ -755,14 +753,14 @@ fn resolve<STGY: MenuNavigationStrategy>(
                 Ok(FocusAction::Lock) => {
                     let reason = LockReason::Focusable(focused);
                     lock.lock_reason = Some(reason);
-                    return NavEvent::Locked(reason);
+                    return NavMessage::Locked(reason);
                 }
                 Err(_) | Ok(FocusAction::Normal) => {}
             }
             let child_menu = child_menu(focused, queries);
             let (_, menu, _) = or_none!(child_menu);
             let to = (menu.active_child, from.clone().into()).into();
-            NavEvent::FocusChanged { to, from }
+            NavMessage::FocusChanged { to, from }
         }
         // "Tab move" nested movement
         ScopeMove(scope_dir) => {
@@ -779,7 +777,7 @@ fn resolve<STGY: MenuNavigationStrategy>(
                     None => Vec::new(),
                 };
                 let to = (extra, *to).into();
-                NavEvent::FocusChanged { to, from }
+                NavMessage::FocusChanged { to, from }
             }
         }
         FocusOn(new_to_focus) => {
@@ -789,17 +787,17 @@ fn resolve<STGY: MenuNavigationStrategy>(
             let mut to = queries.root_path(new_to_focus);
             trim_common_tail(&mut from, &mut to);
             if from == to {
-                NavEvent::NoChanges { from, request }
+                NavMessage::NoChanges { from, request }
             } else {
-                NavEvent::FocusChanged { from, to }
+                NavMessage::FocusChanged { from, to }
             }
         }
         Unlock => {
             if let Some(lock_entity) = lock.lock_reason.take() {
-                NavEvent::Unlocked(lock_entity)
+                NavMessage::Unlocked(lock_entity)
             } else {
                 warn!("Received a NavRequest::Unlock while not locked");
-                NavEvent::NoChanges { from, request }
+                NavMessage::NoChanges { from, request }
             }
         }
     }
@@ -845,13 +843,13 @@ pub(crate) fn insert_tree_menus(
 pub(crate) fn set_first_focused(
     has_focused: Query<(), With<Focused>>,
     mut queries: ParamSet<(NavQueries, MutQueries)>,
-    mut events: EventWriter<NavEvent>,
+    mut events: MessageWriter<NavMessage>,
 ) {
     if has_focused.is_empty() {
         if let Some(to_focus) = queries.p0().pick_first_focused() {
             let breadcrumb = queries.p0().root_path(to_focus);
             queries.p1().update_focus(&[], &breadcrumb);
-            events.write(NavEvent::InitiallyFocused(to_focus));
+            events.write(NavMessage::InitiallyFocused(to_focus));
         }
     }
 }
@@ -885,8 +883,8 @@ pub(crate) fn listen_nav_requests<STGY: SystemParam>(
     mut queries: ParamSet<(NavQueries, MutQueries)>,
     mquery: StaticSystemParam<STGY>,
     mut lock: ResMut<NavLock>,
-    mut requests: EventReader<NavRequest>,
-    mut events: EventWriter<NavEvent>,
+    mut requests: MessageReader<NavRequest>,
+    mut events: MessageWriter<NavMessage>,
 ) where
     for<'w, 's> SystemParamItem<'w, 's, STGY>: MenuNavigationStrategy,
 {
@@ -914,7 +912,7 @@ pub(crate) fn listen_nav_requests<STGY: SystemParam>(
         };
         let from = Vec::new();
         let event = resolve(focused, *request, &queries.p0(), &mut lock, from, &*mquery);
-        if let NavEvent::FocusChanged { to, from } = &event {
+        if let NavMessage::FocusChanged { to, from } = &event {
             computed_focused = Some(queries.p1().update_focus(from, to));
         };
         events.write(event);

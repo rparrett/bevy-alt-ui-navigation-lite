@@ -184,7 +184,7 @@ pub fn mouse_pointer_system(
     mouse: Res<ButtonInput<MouseButton>>,
     focusables: Query<(&GlobalTransform, &Sprite, Entity), With<Focusable>>,
     focused: Query<Entity, With<Focused>>,
-    mut nav_cmds: EventWriter<NavRequest>,
+    mut nav_cmds: MessageWriter<NavRequest>,
 ) {
     // If the camera is currently moving, skip mouse pointing
     if camera_moving.iter().next().is_some() {
@@ -429,13 +429,13 @@ fn animate_system(mut animated: Query<(&Animate, &mut Transform)>, time: Res<Tim
 
 /// Move camera to the menu that is currently focused if the focus changed menu.
 fn handle_menu_change(
-    mut nav_events: EventReader<NavEvent>,
+    mut nav_events: MessageReader<NavMessage>,
     mut cam: Query<&mut Animate, With<Camera2d>>,
     menu_position: Query<&GlobalTransform, With<Menu>>,
     menu_query: Query<&ParentMenu>,
 ) {
     for event in nav_events.read() {
-        if let NavEvent::FocusChanged { to, from } = event {
+        if let NavMessage::FocusChanged { to, from } = event {
             let menu_query = (menu_query.get(*from.first()), menu_query.get(*to.first()));
             if let (Ok(from), Ok(to)) = menu_query {
                 if from.0 != to.0 {
@@ -461,8 +461,8 @@ fn handle_menu_change(
 /// Handle generating new menus when an upgrade is selected.
 fn upgrade_weapon(
     mut commands: Commands,
-    mut events: EventReader<NavEvent>,
-    mut requests: EventWriter<NavRequest>,
+    mut events: MessageReader<NavMessage>,
+    mut requests: MessageWriter<NavRequest>,
     (mut menus, time): (ResMut<MenuMap>, Res<Time>),
     mut cam: Query<&mut Animate, With<Camera2d>>,
     query: Query<(&ParentMenu, &WeaponUpgrade, &SpawnDirection, Entity)>,
@@ -482,7 +482,7 @@ fn upgrade_weapon(
         if menus.is_free(at) {
             // Exercise to the reader: write an alternate system that does not use
             // `Menu.weapon`, but instead reads the `WeaponUpgrade` component of all
-            // focusable in the `from` field of `NavEvent::NoChanges` to generate
+            // focusable in the `from` field of `NavMessage::NoChanges` to generate
             // the current weapon upgrade.
             let menu = spawn_weapon_upgrade_menu(&mut commands, at, &weapon, Some(entity));
             menus.grid.insert(at, menu);
@@ -523,7 +523,7 @@ fn spawn_button(commands: &mut EntityCommands, color: Color, at: Vec2, text: Str
                     font_size: FONT_SIZE,
                     ..default()
                 },
-                TextLayout::new_with_justify(JustifyText::Center),
+                TextLayout::new_with_justify(Justify::Center),
                 item_position(Vec2::ZERO),
             ));
         });
@@ -570,7 +570,7 @@ fn spawn_weapon_upgrade_menu(
                     font_size: FONT_SIZE,
                     ..default()
                 },
-                TextLayout::new_with_justify(JustifyText::Center),
+                TextLayout::new_with_justify(Justify::Center),
                 item_position(Vec2::Y * (MENU_HEIGHT / 2.0 - MENU_PADDING - FONT_SIZE / 2.0)),
             ));
 

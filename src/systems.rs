@@ -4,7 +4,7 @@ use crate::{
     resolve::{FocusState, Focusable, Focused, ScreenBoundaries},
 };
 
-use bevy::math::FloatOrd;
+use bevy::ui::UiStack;
 use bevy::window::PrimaryWindow;
 #[cfg(feature = "bevy_reflect")]
 use bevy::{ecs::reflect::ReflectResource, reflect::Reflect};
@@ -127,7 +127,7 @@ macro_rules! mapping {
 /// when integrating in the game) in this case, you should write your own
 /// system that sends [`NavRequest`] events
 pub fn default_gamepad_input(
-    mut nav_cmds: EventWriter<NavRequest>,
+    mut nav_cmds: MessageWriter<NavRequest>,
     has_focused: Query<(), With<Focused>>,
     input_mapping: Res<InputMapping>,
     gamepads: Query<(Entity, &Gamepad)>,
@@ -200,7 +200,7 @@ pub fn default_keyboard_input(
     has_focused: Query<(), With<Focused>>,
     keyboard: Res<ButtonInput<KeyCode>>,
     input_mapping: Res<InputMapping>,
-    mut nav_cmds: EventWriter<NavRequest>,
+    mut nav_cmds: MessageWriter<NavRequest>,
 ) {
     use Direction::*;
     use NavRequest::*;
@@ -249,11 +249,12 @@ pub struct NodePosQuery<'w, 's, T: Component> {
         (
             Entity,
             &'static T,
-            &'static GlobalTransform,
+            &'static UiGlobalTransform,
             &'static Focusable,
         ),
     >,
     boundaries: Option<Res<'w, ScreenBoundaries>>,
+    ui_stack: Res<'w, UiStack>,
 }
 impl<T: Component> NodePosQuery<'_, '_, T> {
     fn cursor_pos(&self, at: Vec2) -> Option<Vec2> {
@@ -264,9 +265,9 @@ impl<T: Component> NodePosQuery<'_, '_, T> {
 
 fn is_in_node<T: ScreenSize>(
     at: Vec2,
-    (_, node, trans, _): &(Entity, &T, &GlobalTransform, &Focusable),
+    (_, node, trans, _): &(Entity, &T, &UiGlobalTransform, &Focusable),
 ) -> bool {
-    let ui_pos = trans.translation().truncate();
+    let ui_pos = trans.translation;
     let node_half_size = node.size() / 2.0;
     let min = ui_pos - node_half_size;
     let max = ui_pos + node_half_size;
@@ -281,12 +282,17 @@ where
     T: ScreenSize + Component,
 {
     let world_at = query.cursor_pos(at)?;
+
     query
-        .entities
+        .ui_stack
+        .uinodes
         .iter()
+        // reverse the iterator to traverse the tree from closest nodes to furthest
+        .rev()
+        .filter_map(|entity| query.entities.get(*entity).ok())
         .filter(|query_elem| is_in_node(world_at, query_elem))
-        .max_by_key(|elem| FloatOrd(elem.2.translation().z))
         .map(|elem| elem.0)
+        .next()
 }
 
 fn cursor_pos(window: &Window) -> Option<Vec2> {
@@ -327,7 +333,7 @@ pub fn default_mouse_input(
     mouse: Res<ButtonInput<MouseButton>>,
     focusables: NodePosQuery<ComputedNode>,
     focused: Query<Entity, With<Focused>>,
-    nav_cmds: EventWriter<NavRequest>,
+    nav_cmds: MessageWriter<NavRequest>,
     last_pos: Local<Vec2>,
 ) {
     generic_default_mouse_input(
@@ -360,7 +366,7 @@ pub fn generic_default_mouse_input<T: ScreenSize + Component>(
     mouse: Res<ButtonInput<MouseButton>>,
     focusables: NodePosQuery<T>,
     focused: Query<Entity, With<Focused>>,
-    mut nav_cmds: EventWriter<NavRequest>,
+    mut nav_cmds: MessageWriter<NavRequest>,
     mut last_pos: Local<Vec2>,
 ) {
     let no_focusable_msg = "Entity with `Focused` component must also have a `Focusable` component";
@@ -403,12 +409,17 @@ pub fn generic_default_mouse_input<T: ScreenSize + Component>(
         // We only run this code when we really need it because we iterate over all
         // focusables, which can eat a lot of CPU.
         let under_mouse = focusables
-            .entities
+            .ui_stack
+            .uinodes
             .iter()
+            // reverse the iterator to traverse the tree from closest nodes to furthest
+            .rev()
+            .filter_map(|entity| focusables.entities.get(*entity).ok())
             .filter(|query_elem| query_elem.3.state() != FocusState::Blocked)
             .filter(|query_elem| is_in_node(world_cursor_pos, query_elem))
-            .max_by_key(|elem| FloatOrd(elem.2.translation().z))
-            .map(|elem| elem.0);
+            .map(|elem| elem.0)
+            .next();
+
         let to_target = match under_mouse {
             Some(c) => c,
             None => return,
