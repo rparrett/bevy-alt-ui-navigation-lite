@@ -1,3 +1,7 @@
+# 0.5.0
+
+* Upgrade to Bevy 0.17 by @rparrett in <https://github.com/rparrett/bevy-alt-ui-navigation-lite/pull/9>
+
 # 0.4.0
 
 * Upgrade to Bevy 0.16 by @rparrett in <https://github.com/rparrett/bevy-alt-ui-navigation-lite/pull/7>
