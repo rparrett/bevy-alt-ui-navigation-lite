@@ -15,7 +15,7 @@ Many simpler use-cases can now be handled by Bevy's [directional navigation](htt
 
 ```toml
 [dependencies]
-bevy-alt-ui-navigation-lite = "0.4"
+bevy-alt-ui-navigation-lite = "0.5"
 ```
 
 ## Changelog
@@ -26,6 +26,7 @@ See the changelog at [`CHANGELOG.md`](./CHANGELOG.md)
 
 | `bevy` | `bevy-alt-ui-navigation-lite` |
 |------|------|
+| 0.17 | 0.5  |
 | 0.16 | 0.4  |
 | 0.15 | 0.3  |
 | 0.14 | 0.2  |
