@@ -4,14 +4,13 @@
 [![docs](https://docs.rs/bevy-alt-ui-navigation-lite/badge.svg)](https://docs.rs/bevy-alt-ui-navigation-lite)
 [![Following released Bevy versions](https://img.shields.io/badge/Bevy%20tracking-released%20version-lightblue)](https://bevyengine.org/learn/book/plugin-development/#main-branch-tracking)
 
+> [!NOTE]
+> This project has been archived now that Bevy 0.18 has built-in [automatic directional navigation](https://bevy.org/news/bevy-0-18/#automatic-directional-navigation).
+
 A generic UI navigation algorithm for the
 [Bevy](https://github.com/bevyengine/bevy) engine default UI library.
 
 Based on [`bevy-ui-navigation`](https://github.com/nicopap) but stripped down to remove support for `cuicui_layout` and `bevy_mod_picking`.
-
-Maintenance of this project is becoming burdensome for me and I am considering archiving it soon.
-
-Many simpler use-cases can now be handled by Bevy's [directional navigation](https://bevy.org/examples/ui-user-interface/directional-navigation/). Consider using it instead, if possible.
 
 ```toml
 [dependencies]
